@@ -1,0 +1,27 @@
+package com.a_team.taskmanager.ui.taskedit;
+
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+
+import com.a_team.taskmanager.Constants;
+import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.ui.SingleFragmentActivity;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class TaskEditActivity extends SingleFragmentActivity {
+
+    @NonNull
+    public static Intent newIntent(Context context, Task task) {
+        return new Intent(context, TaskEditActivity.class).putExtra(Constants.ARG_CURRENT_TASK, task);
+    }
+
+    @Override
+    protected Fragment createFragment() {
+        Task task = getIntent().getParcelableExtra(Constants.ARG_CURRENT_TASK);
+        return TaskEditFragment.newInstance(task);
+    }
+}
