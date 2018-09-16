@@ -6,17 +6,25 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.repository.TaskManagerRepository;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class TaskListViewModel extends AndroidViewModel {
     private MediatorLiveData<List<Task>> mTasks;
+    private Executor mExecutor;
+    private TaskManagerRepository mRepository;
 
-    public TaskListViewModel(Application application) {
+    public TaskListViewModel(Application application, TaskManagerRepository repository) {
         super(application);
         mTasks = new MediatorLiveData<>();
         mTasks.setValue(null);
@@ -28,9 +36,40 @@ public class TaskListViewModel extends AndroidViewModel {
                 mTasks.setValue(tasks);
             }
         });
+
+        mExecutor = Executors.newSingleThreadExecutor();
+
+        mRepository = repository;
     }
 
     public MutableLiveData<List<Task>> getTasks() {
         return mTasks;
+    }
+
+    public void deleteTasks(final Task... tasks) {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mRepository.deleteTasks(tasks);
+            }
+        });
+    }
+
+    public static class Factory extends ViewModelProvider.NewInstanceFactory {
+
+        private final Application mApplication;
+        private final TaskManagerRepository mRepository;
+
+        public Factory(@NonNull Application application) {
+            mApplication = application;
+            mRepository = ((BasicApp) application).getRepository();
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            //noinspection unchecked
+            return (T) new TaskListViewModel(mApplication, mRepository);
+        }
     }
 }

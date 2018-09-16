@@ -46,4 +46,7 @@ dependencies {
 
     // Dagger 2
     implementation 'com.google.dagger:dagger-android-support:2.17'
+
+    // Multi-select Recyclerview
+    implementation 'com.bignerdranch.android:recyclerview-multiselect:0.2'
 }

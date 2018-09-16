@@ -4,6 +4,7 @@
     <string name="menu_search">Search</string>
     <string name="menu_sync">Sync</string>
     <string name="menu_save">Save</string>
+    <string name="menu_delete">Delete</string>
 
     <string name="hint_title">Title</string>
     <string name="hint_description">Description</string>

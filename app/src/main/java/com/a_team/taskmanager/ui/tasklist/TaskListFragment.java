@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +28,11 @@ import android.widget.TextView;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskListViewModel;
 import com.a_team.taskmanager.model.Task;
-import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;;
+import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;
+import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+import com.bignerdranch.android.multiselector.MultiSelector;
+import com.bignerdranch.android.multiselector.SwappingHolder;
+;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +43,13 @@ public class TaskListFragment extends Fragment {
     private static final int REQUEST_CODE = 1;
 
     private RecyclerView mRecyclerView;
-    private FloatingActionButton fab;
-    private List<Task> mTasks;
-
+    private FloatingActionButton mFloatingActionButton;
     private TaskListViewModel mViewModel;
+
+    private MultiSelector mMultiSelector;
+    private ModalMultiSelectorCallback mActionModeCallback;
+
+    private List<Task> mTasks;
 
     public static TaskListFragment newInstance() {
         Bundle args = new Bundle();
@@ -58,15 +67,19 @@ public class TaskListFragment extends Fragment {
     }
 
     private void createViewModel() {
-        mViewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
+        TaskListViewModel.Factory factory =
+                new TaskListViewModel.Factory(getActivity().getApplication());
+        mViewModel = ViewModelProviders.of(this, factory).get(TaskListViewModel.class);
     }
 
     private void subscribeUi() {
         mViewModel.getTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(@Nullable List<Task> tasks) {
-                mTasks = tasks != null ? tasks : new ArrayList<Task>();
-                updateRecyclerViewAdapter(mTasks);
+                if (tasks != null) {
+                    mTasks = tasks;
+                    updateRecyclerViewAdapter(mTasks);
+                }
             }
         });
     }
@@ -87,8 +100,11 @@ public class TaskListFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
         configureRecyclerView();
 
-        fab = view.findViewById(R.id.fab);
+        mFloatingActionButton = view.findViewById(R.id.fab);
         configureFloatingActionButton();
+
+        mMultiSelector = new MultiSelector();
+        configureActionModeCallback();
 
         return view;
     }
@@ -99,13 +115,50 @@ public class TaskListFragment extends Fragment {
     }
 
     private void configureFloatingActionButton() {
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = TaskEditActivity.newIntent(getActivity(), Task.emptyTask());
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
+    }
+
+    private void configureActionModeCallback() {
+        mActionModeCallback = new ModalMultiSelectorCallback(mMultiSelector) {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                super.onCreateActionMode(actionMode, menu);
+                getActivity().getMenuInflater().inflate(R.menu.menu_task_list_select_mode, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                if (item.getItemId() == R.id.task_list_delete) {
+                    mode.finish();
+
+                    deleteSelectedTasks();
+
+                    mMultiSelector.clearSelections();
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
+    private void deleteSelectedTasks() {
+        TaskListAdapter adapter = ((TaskListAdapter) mRecyclerView.getAdapter());
+        Task[] tasksToDelete = adapter.mSelectedTasksIds.toArray(new Task[adapter.mSelectedTasksIds.size()]);
+        mViewModel.deleteTasks(tasksToDelete);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateRecyclerViewAdapter(List<Task> tasks) {
+        if (isAdded()) {
+            ((TaskListAdapter) mRecyclerView.getAdapter()).setData(tasks);
+        }
     }
 
     @Override
@@ -173,13 +226,17 @@ public class TaskListFragment extends Fragment {
         }
     }
 
-    private void updateRecyclerViewAdapter(List<Task> tasks) {
-        if (isAdded()) {
-            ((TaskListAdapter) mRecyclerView.getAdapter()).setData(tasks);
-        }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private class TaskListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    /**
+     * View holder to show single action in recycler view
+     */
+
+    private class TaskListViewHolder extends SwappingHolder
+            implements View.OnClickListener, View.OnLongClickListener {
 
         private Task mTask;
         private TextView mTitle;
@@ -187,8 +244,8 @@ public class TaskListFragment extends Fragment {
         private CardView mCardView;
         private ImageView mImage;
 
-        public TaskListViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_task, parent, false));
+        private TaskListViewHolder(View view, MultiSelector selector) {
+            super(view, selector);
 
             mTitle = itemView.findViewById(R.id.task_title);
             mDescription = itemView.findViewById(R.id.task_description);
@@ -196,6 +253,9 @@ public class TaskListFragment extends Fragment {
             mImage = itemView.findViewById(R.id.task_image);
 
             itemView.setOnClickListener(this);
+
+            itemView.setLongClickable(true);
+            itemView.setOnLongClickListener(this);
         }
 
         public void bind(Task task) {
@@ -206,23 +266,53 @@ public class TaskListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent intent = TaskEditActivity.newIntent(getActivity(), mTask);
-            startActivityForResult(intent, REQUEST_CODE);
+            if (!mMultiSelector.tapSelection(TaskListViewHolder.this)) {
+                Intent intent = TaskEditActivity.newIntent(getActivity(), mTask);
+                startActivityForResult(intent, REQUEST_CODE);
+            } else {
+                selectCurrentTask();
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Log.i(TAG, "onLongClick method is running");
+            if (!mMultiSelector.isSelectable()) {
+                ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                mMultiSelector.setSelectable(true);
+
+                selectCurrentTask();
+                return true;
+            }
+            return false;
+        }
+
+        private void selectCurrentTask() {
+            mMultiSelector.setSelected(TaskListViewHolder.this, true);
+            TaskListAdapter adapter = ((TaskListAdapter) mRecyclerView.getAdapter());
+            adapter.addSelectedTask(getAdapterPosition());
         }
     }
 
+    /**
+     * Adapter for recycler view that holds all tasks from database
+     */
+
     private class TaskListAdapter extends RecyclerView.Adapter<TaskListViewHolder> {
         private List<Task> mTasks;
+        private List<Task> mSelectedTasksIds;
 
-        public TaskListAdapter(List<Task> tasks) {
+        private TaskListAdapter(List<Task> tasks) {
             mTasks = tasks;
+            mSelectedTasksIds = new ArrayList<>();
         }
 
         @NonNull
         @Override
         public TaskListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            return new TaskListViewHolder(inflater, parent);
+            View view = inflater.inflate(R.layout.list_item_task, parent, false);
+            return new TaskListViewHolder(view, mMultiSelector);
         }
 
         @Override
@@ -240,10 +330,10 @@ public class TaskListFragment extends Fragment {
             mTasks = tasks;
             notifyDataSetChanged();
         }
-    }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        private void addSelectedTask(int position) {
+            Task task = mTasks.get(position);
+            mSelectedTasksIds.add(task);
+        }
     }
 }

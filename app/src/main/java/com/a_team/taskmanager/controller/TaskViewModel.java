@@ -47,6 +47,15 @@ public class TaskViewModel extends AndroidViewModel {
         });
     }
 
+    public void deleteTask(final Task task) {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mRepository.deleteTasks(task);
+            }
+        });
+    }
+
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
 
         private final Application mApplication;

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,8 +34,8 @@ public class TaskEditFragment extends Fragment {
     private static final String ARG_TITLE = "title";
     private static final String ARG_DESCRIPTION = "description";
 
-    private ImageButton mMakePhotoButton;
-    private ImageButton mSetNotificationButton;
+    private FloatingActionButton mMakePhotoButton;
+    private FloatingActionButton mSetNotificationButton;
     private TextView mNotificationTimestamp;
     private EditText mTitleField;
     private EditText mDescriptionField;
@@ -42,7 +43,6 @@ public class TaskEditFragment extends Fragment {
 
     private Task mTask;
     private TaskViewModel mViewModel;
-    private boolean isNewTask;
 
     public static TaskEditFragment newInstance(Task task) {
         Bundle args = new Bundle();
@@ -58,10 +58,8 @@ public class TaskEditFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         receiveTaskFromBundle();
         if (isReceivedTaskCorrect()) {
-            isNewTask = false;
             createViewModelAndSubscribeUi();
         } else {
-            isNewTask = true;
             createViewModelAndEmptyTask();
         }
     }
@@ -104,7 +102,7 @@ public class TaskEditFragment extends Fragment {
         if (task != null) {
             mTitleField.setText(task.getTitle());
             mDescriptionField.setText(task.getDescription());
-            //mNotificationTimestamp.setText(task.getNotificationDate().toString());
+            //mNotificationTimestamp.setText(task.getNotificationDate().toString()); // todo add notification feature
         }
     }
 
@@ -127,6 +125,9 @@ public class TaskEditFragment extends Fragment {
                 updateTask();
                 finishActivity();
                 return true;
+            case R.id.task_edit_menu_delete:
+                deleteTask();
+                finishActivity();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -134,6 +135,10 @@ public class TaskEditFragment extends Fragment {
 
     private void updateTask() {
         mViewModel.updateOrInsertTask(mTask);
+    }
+
+    private void deleteTask() {
+        mViewModel.deleteTask(mTask);
     }
 
     private void finishActivity() {

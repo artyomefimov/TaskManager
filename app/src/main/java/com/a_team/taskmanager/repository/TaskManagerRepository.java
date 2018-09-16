@@ -63,4 +63,8 @@ public class TaskManagerRepository {
         LiveData<Task> receivedTask = mDatabase.taskDao().getTask(taskId);
         return receivedTask.getValue() != null;
     }
+
+    public void deleteTasks(Task... tasks) {
+        mDatabase.taskDao().deleteTasks(tasks);
+    }
 }
