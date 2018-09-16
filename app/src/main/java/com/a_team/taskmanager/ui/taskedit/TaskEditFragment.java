@@ -19,14 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.Constants;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskViewModel;
-import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.entity.Task;
 
 public class TaskEditFragment extends Fragment {
 

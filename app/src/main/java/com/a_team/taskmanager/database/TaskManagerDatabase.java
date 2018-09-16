@@ -7,7 +7,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import com.a_team.taskmanager.database.dao.TaskDao;
-import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.entity.Task;
 
 @Database(entities = {Task.class}, version = 1)
 public abstract class TaskManagerDatabase extends RoomDatabase {

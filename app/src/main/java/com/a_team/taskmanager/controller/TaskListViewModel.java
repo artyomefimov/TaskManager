@@ -12,8 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.BasicApp;
-import com.a_team.taskmanager.model.Task;
-import com.a_team.taskmanager.repository.TaskManagerRepository;
+import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.controller.repository.TaskManagerRepository;
 
 import java.util.List;
 import java.util.concurrent.Executor;

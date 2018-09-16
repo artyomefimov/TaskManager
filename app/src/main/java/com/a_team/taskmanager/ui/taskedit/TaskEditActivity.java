@@ -6,11 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import com.a_team.taskmanager.Constants;
-import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.SingleFragmentActivity;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 
 public class TaskEditActivity extends SingleFragmentActivity {
 

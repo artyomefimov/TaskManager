@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.model;
+package com.a_team.taskmanager.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 
 import com.a_team.taskmanager.database.dao.DateConverter;
 
-import java.io.Serializable;
 import java.sql.Date;
 import java.util.Objects;
 

@@ -1,7 +1,9 @@
 package com.a_team.taskmanager.ui.tasklist;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
@@ -22,12 +26,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskListViewModel;
-import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
+import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
@@ -41,6 +47,7 @@ public class TaskListFragment extends Fragment {
 
     private static final String TAG = "TaskListFragment";
     private static final int REQUEST_CODE = 1;
+    private static final String SEARCH_FRAGMENT = "searchFragment";
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFloatingActionButton;
@@ -49,6 +56,7 @@ public class TaskListFragment extends Fragment {
     private MultiSelector mMultiSelector;
     private ModalMultiSelectorCallback mActionModeCallback;
 
+    private TaskSearchUtil mSearchUtil;
     private List<Task> mTasks;
 
     public static TaskListFragment newInstance() {
@@ -78,6 +86,7 @@ public class TaskListFragment extends Fragment {
             public void onChanged(@Nullable List<Task> tasks) {
                 if (tasks != null) {
                     mTasks = tasks;
+                    mSearchUtil.setStringTaskData(tasks);
                     updateRecyclerViewAdapter(mTasks);
                 }
             }
@@ -96,6 +105,7 @@ public class TaskListFragment extends Fragment {
         View view = inflater.inflate(R.layout.task_list_fragment, container, false);
 
         mTasks = new ArrayList<>();
+        mSearchUtil = TaskSearchUtil.getInstance();
 
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
         configureRecyclerView();
@@ -180,8 +190,25 @@ public class TaskListFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d(TAG, "onQueryTextSubmit: ");
-                return false;
+                hideKeyboard(getActivity(), getView());
+                startSearchFragment(query);
+                return true;
+            }
+
+            private void startSearchFragment(String query) {
+                FragmentManager fragmentManager = getFragmentManager();
+                if (fragmentManager != null) {
+                    SearchFragment searchFragment = SearchFragment.newInstance(query);
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment_container, searchFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            }
+
+            private void hideKeyboard(Context context, View view) {
+                InputMethodManager imm = ((InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE));
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
 
             @Override
@@ -214,8 +241,6 @@ public class TaskListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_search:
-                Snackbar.make(getView(), "Search", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 return true;
             case R.id.menu_sync:
                 Snackbar.make(getView(), "Synchronize", Snackbar.LENGTH_LONG)

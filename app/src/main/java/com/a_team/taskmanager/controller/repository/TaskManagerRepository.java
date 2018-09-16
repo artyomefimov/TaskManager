@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.repository;
+package com.a_team.taskmanager.controller.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
@@ -6,11 +6,9 @@ import android.arch.lifecycle.Observer;
 import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.database.TaskManagerDatabase;
-import com.a_team.taskmanager.model.Task;
+import com.a_team.taskmanager.entity.Task;
 
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class TaskManagerRepository {
     private static TaskManagerRepository mInstance;

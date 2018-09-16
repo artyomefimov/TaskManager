@@ -3,17 +3,14 @@ package com.a_team.taskmanager.controller;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.BasicApp;
-import com.a_team.taskmanager.model.Task;
-import com.a_team.taskmanager.repository.TaskManagerRepository;
+import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.controller.repository.TaskManagerRepository;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

@@ -3,7 +3,7 @@ package com.a_team.taskmanager;
 import android.app.Application;
 
 import com.a_team.taskmanager.database.TaskManagerDatabase;
-import com.a_team.taskmanager.repository.TaskManagerRepository;
+import com.a_team.taskmanager.controller.repository.TaskManagerRepository;
 
 public class BasicApp extends Application {
 
