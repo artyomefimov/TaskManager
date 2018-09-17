@@ -99,6 +99,17 @@ public class TaskListFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        clearActionBarSubtitle();
+    }
+
+    private void clearActionBarSubtitle() {
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        activity.getSupportActionBar().setSubtitle(null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

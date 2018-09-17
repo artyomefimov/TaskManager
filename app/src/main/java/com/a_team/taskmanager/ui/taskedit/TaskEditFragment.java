@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -61,6 +62,7 @@ public class TaskEditFragment extends Fragment {
         } else {
             createViewModelAndEmptyTask();
         }
+        setActionBarSubtitle();
     }
 
     private void receiveTaskFromBundle() {
@@ -176,6 +178,14 @@ public class TaskEditFragment extends Fragment {
         mPhoto = view.findViewById(R.id.task_edit_photo);
 
         return view;
+    }
+
+    private void setActionBarSubtitle() {
+        String subtitle = mTask.getTitle() != null ?
+                mTask.getTitle() :
+                "Create task";
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
     private void configureMakePhotoButton() {

@@ -56,7 +56,7 @@ public class TaskSearchUtil {
     }
 
     private String makeRegex(String entry) {
-        return "[A-Z0-9a-zА-Яа-я]*" + "\\s*" + entry + "+" + "\\s*" +"[A-Z0-9a-zА-Яа-я]*"; // todo доделать
+        return "[^\\\\w\\\\d]*" + entry + "+" + "[^\\\\w\\\\d]*";
     }
 
     private boolean isQueryIncorrect(String query) {
