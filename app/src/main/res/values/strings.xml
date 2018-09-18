@@ -8,4 +8,6 @@
 
     <string name="hint_title">Title</string>
     <string name="hint_description">Description</string>
+
+    <string name="no_results">No results</string>
 </resources>

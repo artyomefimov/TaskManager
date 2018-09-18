@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
@@ -34,6 +35,8 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private TaskSearchUtil mSearchUtil;
+    private ProgressBar mProgressBar;
+    private TextView mNoResultsTextView;
 
     private String query;
 
@@ -53,6 +56,15 @@ public class SearchFragment extends Fragment {
         setActionBarSubtitle();
     }
 
+    private void setActionBarSubtitle() {
+        String subtitle = "Search results for: \"" +
+                query +
+                "\"";
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(QUERY, query);
@@ -67,24 +79,49 @@ public class SearchFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recycler_view_search);
         configureRecyclerView();
 
+        mProgressBar = view.findViewById(R.id.search_fragment_progress_bar);
+        mNoResultsTextView = view.findViewById(R.id.search_fragment_no_results);
+
         mSearchUtil = TaskSearchUtil.getInstance();
-        List<Task> tasksFromSearch = mSearchUtil.performSearch(query);
-        updateAdapter(tasksFromSearch);
+        performSearch();
 
         return view;
-    }
-
-    private void setActionBarSubtitle() {
-        String subtitle = "Search results for: \"" +
-                query +
-                "\"";
-        AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new SearchAdapter(null));
+    }
+
+    private void performSearch() {
+        showProgressBar();
+        List<Task> tasksFromSearch = mSearchUtil.performSearch(query);
+        if (isNoResults(tasksFromSearch)) {
+            showNoResultsText();
+        } else {
+            updateAdapter(tasksFromSearch);
+            hideProgressBar();
+        }
+    }
+
+    private boolean isNoResults(List<Task> tasksFromSearch) {
+        return tasksFromSearch.equals(Collections.EMPTY_LIST);
+    }
+
+    private void showNoResultsText() {
+        mRecyclerView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
+        mNoResultsTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void showProgressBar() {
+        mRecyclerView.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar() {
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void updateAdapter(List<Task> tasks) {
