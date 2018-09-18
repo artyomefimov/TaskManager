@@ -3,6 +3,7 @@ package com.a_team.taskmanager.ui.tasklist;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -83,7 +84,8 @@ public class SearchFragment extends Fragment {
         mNoResultsTextView = view.findViewById(R.id.search_fragment_no_results);
 
         mSearchUtil = TaskSearchUtil.getInstance();
-        performSearch();
+
+        new AsyncSearchPerformer().execute();
 
         return view;
     }
@@ -91,37 +93,6 @@ public class SearchFragment extends Fragment {
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new SearchAdapter(null));
-    }
-
-    private void performSearch() {
-        showProgressBar();
-        List<Task> tasksFromSearch = mSearchUtil.performSearch(query);
-        if (isNoResults(tasksFromSearch)) {
-            showNoResultsText();
-        } else {
-            updateAdapter(tasksFromSearch);
-            hideProgressBar();
-        }
-    }
-
-    private boolean isNoResults(List<Task> tasksFromSearch) {
-        return tasksFromSearch.equals(Collections.EMPTY_LIST);
-    }
-
-    private void showNoResultsText() {
-        mRecyclerView.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.GONE);
-        mNoResultsTextView.setVisibility(View.VISIBLE);
-    }
-
-    private void showProgressBar() {
-        mRecyclerView.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideProgressBar() {
-        mRecyclerView.setVisibility(View.VISIBLE);
-        mProgressBar.setVisibility(View.GONE);
     }
 
     private void updateAdapter(List<Task> tasks) {
@@ -189,6 +160,51 @@ public class SearchFragment extends Fragment {
         public void setTasks(List<Task> tasks) {
             mTasks = tasks;
             notifyDataSetChanged();
+        }
+    }
+
+    private class AsyncSearchPerformer extends AsyncTask<Void, Void, List<Task>> {
+        private List<Task> mTasksFromSearch;
+
+        @Override
+        protected void onPreExecute() {
+            showProgressBar();
+        }
+
+        private void showProgressBar() {
+            mRecyclerView.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected List<Task> doInBackground(Void... voids) {
+            mTasksFromSearch = mSearchUtil.performSearch(query);
+            return mTasksFromSearch;
+        }
+
+        @Override
+        protected void onPostExecute(List<Task> tasks) {
+            if (isNoResults(mTasksFromSearch)) {
+                showNoResultsText();
+            } else {
+                updateAdapter(mTasksFromSearch);
+                hideProgressBar();
+            }
+        }
+
+        private boolean isNoResults(List<Task> tasksFromSearch) {
+            return tasksFromSearch.equals(Collections.EMPTY_LIST);
+        }
+
+        private void showNoResultsText() {
+            mRecyclerView.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.GONE);
+            mNoResultsTextView.setVisibility(View.VISIBLE);
+        }
+
+        private void hideProgressBar() {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 }
