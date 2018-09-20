@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Entity(tableName = "Task")
 @TypeConverters({DateConverter.class})
-public class Task extends BaseObservable implements Parcelable {
+public class Task extends BaseObservable implements Parcelable, AbstractTask {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
     private long id;
@@ -43,11 +43,6 @@ public class Task extends BaseObservable implements Parcelable {
         return new Task();
     }
 
-    @Ignore
-    public Task(@NonNull String name) {
-        this.title = name;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -56,7 +51,6 @@ public class Task extends BaseObservable implements Parcelable {
         return this.id;
     }
 
-    @NonNull
     public String getTitle() {
         return this.title;
     }
@@ -69,7 +63,7 @@ public class Task extends BaseObservable implements Parcelable {
         this.id = id;
     }
 
-    public void setTitle(@NonNull String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 

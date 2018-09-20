@@ -30,14 +30,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class SearchFragment extends Fragment {
     private static final String QUERY = "query";
     private static final int REQUEST_CODE = 2;
 
-    private RecyclerView mRecyclerView;
+    private Unbinder mUnbinder;
+    @BindView(R.id.recycler_view_search) RecyclerView mRecyclerView;
+    @BindView(R.id.search_fragment_progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.search_fragment_no_results) TextView mNoResultsTextView;
+
     private TaskSearchUtil mSearchUtil;
-    private ProgressBar mProgressBar;
-    private TextView mNoResultsTextView;
 
     private String query;
 
@@ -76,18 +82,21 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.search_fragment, container, false);
+        mUnbinder = ButterKnife.bind(this, view);
 
-        mRecyclerView = view.findViewById(R.id.recycler_view_search);
         configureRecyclerView();
-
-        mProgressBar = view.findViewById(R.id.search_fragment_progress_bar);
-        mNoResultsTextView = view.findViewById(R.id.search_fragment_no_results);
 
         mSearchUtil = TaskSearchUtil.getInstance();
 
         new AsyncSearchPerformer().execute();
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnbinder.unbind();
     }
 
     private void configureRecyclerView() {
