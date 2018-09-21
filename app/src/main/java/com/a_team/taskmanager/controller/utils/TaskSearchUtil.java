@@ -27,10 +27,6 @@ public class TaskSearchUtil {
         mTasksFromSearch = new ArrayList<>();
     }
 
-    public Map<Long, Task> getTasks() {
-        return mTasks;
-    }
-
     public void setStringTaskData(List<Task> tasks) {
         if (tasks != null) {
             for (Task task : tasks) {
@@ -43,8 +39,9 @@ public class TaskSearchUtil {
 
     @SuppressWarnings("unchecked")
     public List<Task> performSearch(final String query) {
+        mTasksFromSearch = new ArrayList<>();
         performSearch0(query);
-        return isNoResults() ? Collections.EMPTY_LIST : mTasksFromSearch;
+        return isNoResults() ? Collections.emptyList() : Collections.unmodifiableList(mTasksFromSearch);
     }
 
     private boolean isNoResults() {

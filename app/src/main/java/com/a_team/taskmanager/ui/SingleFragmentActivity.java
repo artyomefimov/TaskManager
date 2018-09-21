@@ -9,7 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.a_team.taskmanager.R;
 
-public abstract class SingleFragmentActivity extends AppCompatActivity {
+public abstract class SingleFragmentActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
+    private FragmentManager fragmentManager;
     protected abstract Fragment createFragment();
 
     @LayoutRes
@@ -22,7 +23,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(this);
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
         if (fragment == null) {
@@ -31,5 +33,21 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             transaction.add(R.id.fragment_container, fragment);
             transaction.commit();
         }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        shouldDisplayHomeUp();
+    }
+
+    private void shouldDisplayHomeUp() {
+        boolean canBack = fragmentManager.getBackStackEntryCount() > 0;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        fragmentManager.popBackStack();
+        return true;
     }
 }

@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,23 +30,18 @@ import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskViewModel;
 import com.a_team.taskmanager.entity.Task;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
 public class TaskEditFragment extends Fragment {
 
     private static final String ARG_TIMESTAMP = "timestamp";
     private static final String ARG_TITLE = "title";
     private static final String ARG_DESCRIPTION = "description";
 
-    private Unbinder mUnbinder;
-    @BindView(R.id.task_edit_make_photo) FloatingActionButton mMakePhotoButton;
-    @BindView(R.id.task_edit_add_notification) FloatingActionButton mSetNotificationButton;
-    @BindView(R.id.task_edit_notification_timestamp) TextView mNotificationTimestamp;
-    @BindView(R.id.task_edit_title) EditText mTitleField;
-    @BindView(R.id.task_edit_description) EditText mDescriptionField;
-    @BindView(R.id.task_edit_photo) ImageView mPhoto;
+    private FloatingActionButton mMakePhotoButton;
+    private FloatingActionButton mSetNotificationButton;
+    private TextView mNotificationTimestamp;
+    private EditText mTitleField;
+    private EditText mDescriptionField;
+    private ImageView mPhoto;
 
     private Task mTask;
     private TaskViewModel mViewModel;
@@ -159,12 +156,20 @@ public class TaskEditFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.task_edit_fragment, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
 
+        mMakePhotoButton = view.findViewById(R.id.task_edit_make_photo);
         configureMakePhotoButton();
+
+        mSetNotificationButton = view.findViewById(R.id.task_edit_add_notification);
         configureSetNotificationButton();
+
+        mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
         configureNotificationTimestampButton();
+
+        mTitleField = view.findViewById(R.id.task_edit_title);
         configureTitleField();
+
+        mDescriptionField = view.findViewById(R.id.task_edit_description);
         configureDescriptionField();
 
         mPhoto = view.findViewById(R.id.task_edit_photo);
@@ -172,18 +177,14 @@ public class TaskEditFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnbinder.unbind();
-    }
-
     private void setActionBarSubtitle() {
         String subtitle = mTask.getTitle() != null ?
                 mTask.getTitle() :
                 "Create task";
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        activity.getSupportActionBar().setSubtitle(subtitle);
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle(subtitle);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void configureMakePhotoButton() {

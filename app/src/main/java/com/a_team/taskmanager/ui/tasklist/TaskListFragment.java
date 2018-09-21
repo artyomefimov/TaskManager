@@ -38,14 +38,9 @@ import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
-;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 public class TaskListFragment extends Fragment {
 
@@ -53,9 +48,8 @@ public class TaskListFragment extends Fragment {
     private static final int REQUEST_CODE = 1;
     private static final String SEARCH_FRAGMENT = "searchFragment";
 
-    private Unbinder mUnbinder;
-    @BindView(R.id.recycler_view_task_list) RecyclerView mRecyclerView;
-    @BindView(R.id.fab) FloatingActionButton mFloatingActionButton;
+    private RecyclerView mRecyclerView;
+    private FloatingActionButton mFloatingActionButton;
     private TaskListViewModel mViewModel;
 
     private MultiSelector mMultiSelector;
@@ -119,24 +113,20 @@ public class TaskListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.task_list_fragment, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
 
         mTasks = new ArrayList<>();
         mSearchUtil = TaskSearchUtil.getInstance();
 
+        mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
         configureRecyclerView();
+
+        mFloatingActionButton = view.findViewById(R.id.fab);
         configureFloatingActionButton();
 
         mMultiSelector = new MultiSelector();
         configureActionModeCallback();
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnbinder.unbind();
     }
 
     private void configureRecyclerView() {
