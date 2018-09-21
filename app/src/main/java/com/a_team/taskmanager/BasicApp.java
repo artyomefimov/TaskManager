@@ -17,6 +17,6 @@ public class BasicApp extends Application {
     }
 
     public TaskManagerRepository getRepository() {
-        return TaskManagerRepository.getInstance(getDatabase());
+        return TaskManagerRepository.getInstance(getDatabase(), getApplicationContext());
     }
 }

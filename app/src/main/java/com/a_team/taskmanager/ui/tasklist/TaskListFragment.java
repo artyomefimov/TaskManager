@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskListViewModel;
+import com.a_team.taskmanager.controller.utils.PictureUtils;
 import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;
@@ -227,13 +229,6 @@ public class TaskListFragment extends Fragment {
                 return false;
             }
         });
-
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
     }
 
     private void configureSyncItem(MenuItem syncItem) {
@@ -297,6 +292,14 @@ public class TaskListFragment extends Fragment {
             mTask = task;
             mTitle.setText(task.getTitle());
             mDescription.setText(task.getDescription());
+            if (hasPhoto(task)) {
+                Bitmap scaledBitmap = PictureUtils.getScaledBitmap(task.getPhotoFile().getPath(), getActivity());
+                mImage.setImageBitmap(scaledBitmap);
+            }
+        }
+
+        private boolean hasPhoto(Task task) {
+            return task.getPhotoFile() != null;
         }
 
         @Override

@@ -12,12 +12,13 @@ import android.support.annotation.NonNull;
 
 import com.a_team.taskmanager.database.dao.DateConverter;
 
+import java.io.File;
 import java.sql.Date;
 import java.util.Objects;
 
 @Entity(tableName = "Task")
 @TypeConverters({DateConverter.class})
-public class Task extends BaseObservable implements Parcelable, AbstractTask {
+public class Task extends BaseObservable implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
     private long id;
@@ -32,6 +33,8 @@ public class Task extends BaseObservable implements Parcelable, AbstractTask {
     @ColumnInfo(name = "Notification")
     private Date notificationDate;
 
+    @Ignore
+    private File photoFile;
     @Deprecated
     /**
      * @deprecated use Task.emptyTask() instead
@@ -73,6 +76,21 @@ public class Task extends BaseObservable implements Parcelable, AbstractTask {
 
     public void setNotificationDate(@NonNull Date notificationDate) {
         this.notificationDate = notificationDate;
+    }
+
+    public String getPhotoFilename() {
+        return new StringBuilder("IMG_")
+                .append(getId())
+                .append(".jpg")
+                .toString();
+    }
+
+    public File getPhotoFile() {
+        return photoFile;
+    }
+
+    public void setPhotoFile(File photoFile) {
+        this.photoFile = photoFile;
     }
 
     @Override

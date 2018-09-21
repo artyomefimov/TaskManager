@@ -3,31 +3,35 @@ package com.a_team.taskmanager.controller.repository;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
+import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.database.TaskManagerDatabase;
 import com.a_team.taskmanager.entity.Task;
 
+import java.io.File;
 import java.util.List;
+import java.util.logging.FileHandler;
 
 public class TaskManagerRepository {
     private static TaskManagerRepository mInstance;
 
     private MediatorLiveData<List<Task>> mObservableTasks;
     private final TaskManagerDatabase mDatabase;
+    private Context mContext;
 
-    public static TaskManagerRepository getInstance(final TaskManagerDatabase database) {
+    public static TaskManagerRepository getInstance(final TaskManagerDatabase database, final Context applicationContext) {
         if (mInstance == null) {
             synchronized (TaskManagerRepository.class) {
                 if (mInstance == null) {
-                    mInstance = new TaskManagerRepository(database);
+                    mInstance = new TaskManagerRepository(database, applicationContext);
                 }
             }
         }
         return mInstance;
     }
 
-    private TaskManagerRepository(final TaskManagerDatabase database) {
+    private TaskManagerRepository(final TaskManagerDatabase database, final Context applicationContext) {
         mDatabase = database;
         mObservableTasks = new MediatorLiveData<>();
 
@@ -39,6 +43,8 @@ public class TaskManagerRepository {
                 }
             }
         });
+
+        mContext = applicationContext;
     }
 
     public LiveData<Task> getTask(long taskId) {
@@ -64,5 +70,10 @@ public class TaskManagerRepository {
 
     public void deleteTasks(Task... tasks) {
         mDatabase.taskDao().deleteTasks(tasks);
+    }
+
+    public File getPhotoFile(Task task) {
+        File filesDir = mContext.getFilesDir();
+        return new File(filesDir, task.getPhotoFilename());
     }
 }

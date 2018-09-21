@@ -12,6 +12,7 @@ import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.controller.repository.TaskManagerRepository;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -42,6 +43,10 @@ public class TaskViewModel extends AndroidViewModel {
                 mRepository.updateOrInsertTask(task);
             }
         });
+    }
+
+    public File getPhotoFile(Task task) {
+        return mRepository.getPhotoFile(task);
     }
 
     public void deleteTask(final Task task) {
