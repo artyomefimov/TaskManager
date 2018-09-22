@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.database.TaskManagerDatabase;
@@ -75,5 +76,9 @@ public class TaskManagerRepository {
     public File getPhotoFile(Task task) {
         File filesDir = mContext.getFilesDir();
         return new File(filesDir, task.getPhotoFilename());
+    }
+
+    public void removePhotoFile(Uri uri) {
+        mContext.getContentResolver().delete(uri, null, null);
     }
 }

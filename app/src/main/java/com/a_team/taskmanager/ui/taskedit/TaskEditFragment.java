@@ -3,6 +3,7 @@ package com.a_team.taskmanager.ui.taskedit;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -19,6 +20,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -28,8 +30,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Scroller;
 import android.widget.TextView;
 
@@ -63,6 +67,8 @@ public class TaskEditFragment extends Fragment {
     private Task mTask;
     private TaskViewModel mViewModel;
     private File mPhotoFile;
+
+    private boolean isShouldDeletePhoto;
 
     public static TaskEditFragment newInstance(Task task) {
         Bundle args = new Bundle();
@@ -154,6 +160,7 @@ public class TaskEditFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.task_edit_menu_save:
                 updateTask();
+                removePhotoIfNecessary();
                 finishActivity();
                 return true;
             case R.id.task_edit_menu_delete:
@@ -168,6 +175,13 @@ public class TaskEditFragment extends Fragment {
         mViewModel.updateOrInsertTask(mTask);
     }
 
+    private void removePhotoIfNecessary() {
+        if (isShouldDeletePhoto) {
+            Uri fileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
+            mViewModel.removePhotoFile(fileUri);
+        }
+    }
+
     private void deleteTask() {
         mViewModel.deleteTask(mTask);
     }
@@ -179,7 +193,7 @@ public class TaskEditFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putString(ARG_TIMESTAMP, mNotificationTimestamp.getText().toString());
+        //outState.putString(ARG_TIMESTAMP, mNotificationTimestamp.getText().toString());
         outState.putString(ARG_TITLE, mTitleField.getText().toString());
         outState.putString(ARG_DESCRIPTION, mDescriptionField.getText().toString());
         super.onSaveInstanceState(outState);
@@ -195,8 +209,8 @@ public class TaskEditFragment extends Fragment {
         mSetNotificationButton = view.findViewById(R.id.task_edit_add_notification);
         configureSetNotificationButton();
 
-        mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
-        configureNotificationTimestampButton();
+//        mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
+//        configureNotificationTimestampButton();
 
         mTitleField = view.findViewById(R.id.task_edit_title);
         configureTitleField();
@@ -215,8 +229,7 @@ public class TaskEditFragment extends Fragment {
 
         PackageManager packageManager = getActivity().getPackageManager();
 
-        boolean canTakePhoto = mPhotoFile != null &&
-                makePhotoIntent.resolveActivity(packageManager) != null;
+        boolean canTakePhoto = makePhotoIntent.resolveActivity(packageManager) != null;
         if (canTakePhoto) {
             mMakePhotoButton.setOnClickListener((view) -> {
                 Uri uri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
@@ -288,11 +301,32 @@ public class TaskEditFragment extends Fragment {
                 fragment.show(getFragmentManager(), DIALOG_IMAGE);
             }
         });
+
+        mPhoto.setOnLongClickListener((view) -> {
+            configurePopupMenu();
+            return true;
+        });
+    }
+
+    private void configurePopupMenu() {
+        PopupMenu popup = new PopupMenu(getActivity(), mPhoto);
+        popup.getMenuInflater().inflate(R.menu.popup_remove_photo, popup.getMenu());
+
+        popup.setOnMenuItemClickListener((item -> {
+            mTask.removePhotoFile();
+            mPhotoFile = null;
+            isShouldDeletePhoto = true;
+            updatePhotoView();
+            return true;
+        }));
+        popup.show();
     }
 
     private void setPhotoFile() {
         mPhotoFile = mViewModel.getPhotoFile(mTask);
-        mTask.setPhotoFile(mPhotoFile);
+        if (mPhotoFile != null) {
+            mTask.setPhotoFile(mPhotoFile);
+        }
     }
 
     private void updatePhotoView() {

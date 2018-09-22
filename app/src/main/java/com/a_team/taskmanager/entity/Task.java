@@ -93,6 +93,10 @@ public class Task extends BaseObservable implements Parcelable {
         this.photoFile = photoFile;
     }
 
+    public void removePhotoFile() {
+        photoFile = null;
+    }
+
     @Override
     public int describeContents() {
         return 0;

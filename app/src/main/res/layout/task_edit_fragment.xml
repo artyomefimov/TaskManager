@@ -7,18 +7,28 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp">
+
+        <EditText
+            android:id="@+id/task_edit_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/hint_title"
+            android:inputType="textMultiLine"
+            android:minHeight="43dp"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/photo_alarm_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/task_edit_title">
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/task_edit_make_photo"
@@ -41,39 +51,16 @@
                 app:layout_constraintRight_toRightOf="parent" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/task_edit_notification_timestamp"
-            style="?android:listSeparatorTextViewStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@android:color/transparent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/photo_alarm_panel" />
-
         <LinearLayout
             android:id="@+id/title_description_panel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:orientation="vertical"
             android:focusable="true"
+            android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/task_edit_notification_timestamp">
-
-            <EditText
-                android:id="@+id/task_edit_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:hint="@string/hint_title"
-                android:inputType="textMultiLine"
-                android:minHeight="43dp"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+            app:layout_constraintTop_toBottomOf="@+id/photo_alarm_panel">
 
             <EditText
                 android:id="@+id/task_edit_description"

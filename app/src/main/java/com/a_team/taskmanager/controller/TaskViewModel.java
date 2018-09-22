@@ -6,7 +6,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
@@ -46,7 +48,13 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public File getPhotoFile(Task task) {
-        return mRepository.getPhotoFile(task);
+        if (!task.equals(Task.emptyTask()))
+            return mRepository.getPhotoFile(task);
+        else return null;
+    }
+
+    public void removePhotoFile(Uri uri) {
+        mRepository.removePhotoFile(uri);
     }
 
     public void deleteTask(final Task task) {
