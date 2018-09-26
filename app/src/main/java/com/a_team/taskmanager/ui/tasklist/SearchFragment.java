@@ -1,7 +1,5 @@
 package com.a_team.taskmanager.ui.tasklist;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,14 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,9 +20,8 @@ import android.widget.TextView;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;
+import com.a_team.taskmanager.ui.singletask.SingleTaskActivity;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,7 +123,7 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent intent = TaskEditActivity.newIntent(getActivity(), mTask);
+            Intent intent = SingleTaskActivity.newIntent(getActivity(), mTask);
             startActivityForResult(intent, REQUEST_CODE);
         }
     }

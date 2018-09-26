@@ -1,8 +1,7 @@
-package com.a_team.taskmanager.ui.taskedit;
+package com.a_team.taskmanager.ui.singletask;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

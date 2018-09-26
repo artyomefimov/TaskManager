@@ -39,31 +39,19 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void updateOrInsertTask(final Task task) {
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mRepository.updateOrInsertTask(task);
-            }
-        });
+        mExecutor.execute(() -> mRepository.updateOrInsertTask(task));
     }
 
     public File getPhotoFile(Task task) {
-        if (!task.equals(Task.emptyTask()))
-            return mRepository.getPhotoFile(task);
-        else return null;
+        return mRepository.getPhotoFile(task);
     }
 
     public void removePhotoFile(Uri uri) {
-        mRepository.removePhotoFile(uri);
+        mExecutor.execute(() -> mRepository.removePhotoFile(uri));
     }
 
     public void deleteTask(final Task task) {
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mRepository.deleteTasks(task);
-            }
-        });
+        mExecutor.execute(() -> mRepository.deleteTasks(task));
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
@@ -71,7 +59,7 @@ public class TaskViewModel extends AndroidViewModel {
         private final Application mApplication;
         private final TaskManagerRepository mRepository;
         private final long mTaskId;
-        
+
         public Factory(@NonNull Application application, long taskId) {
             mApplication = application;
             mTaskId = taskId;

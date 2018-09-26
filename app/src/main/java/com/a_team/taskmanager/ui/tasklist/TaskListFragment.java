@@ -30,13 +30,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskListViewModel;
 import com.a_team.taskmanager.controller.utils.PictureUtils;
 import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.taskedit.TaskEditActivity;
+import com.a_team.taskmanager.ui.singletask.SingleTaskActivity;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
@@ -82,14 +83,11 @@ public class TaskListFragment extends Fragment {
     }
 
     private void subscribeUi() {
-        mViewModel.getTasks().observe(this, new Observer<List<Task>>() {
-            @Override
-            public void onChanged(@Nullable List<Task> tasks) {
-                if (tasks != null) {
-                    mTasks = tasks;
-                    mSearchUtil.setStringTaskData(tasks);
-                    updateRecyclerViewAdapter(mTasks);
-                }
+        mViewModel.getTasks().observe(this, tasks -> {
+            if (tasks != null) {
+                mTasks = tasks;
+                mSearchUtil.setStringTaskData(tasks);
+                updateRecyclerViewAdapter(mTasks);
             }
         });
     }
@@ -140,7 +138,7 @@ public class TaskListFragment extends Fragment {
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = TaskEditActivity.newIntent(getActivity(), Task.emptyTask());
+                Intent intent = SingleTaskActivity.newIntent(getActivity(), Task.emptyTask());
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
@@ -305,7 +303,7 @@ public class TaskListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (!mMultiSelector.tapSelection(TaskListViewHolder.this)) {
-                Intent intent = TaskEditActivity.newIntent(getActivity(), mTask);
+                Intent intent = SingleTaskActivity.newIntent(getActivity(), mTask);
                 startActivityForResult(intent, REQUEST_CODE);
             } else {
                 selectCurrentTask();

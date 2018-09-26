@@ -9,21 +9,23 @@ import android.databinding.BaseObservable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.database.dao.DateConverter;
 
 import java.io.File;
 import java.sql.Date;
 import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 
 @Entity(tableName = "Task")
 @TypeConverters({DateConverter.class})
-public class Task extends BaseObservable implements Parcelable {
+public class Task implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
     private long id;
 
-    @NonNull
     @ColumnInfo(name = "Title")
     private String title;
 
@@ -31,16 +33,19 @@ public class Task extends BaseObservable implements Parcelable {
     private String description;
 
     @ColumnInfo(name = "Notification")
-    private Date notificationDate;
+    private String notificationDate;
+
+    @ColumnInfo(name = "Uuid")
+    private String fileUUID;
 
     @Ignore
     private File photoFile;
+
     @Deprecated
     /**
      * @deprecated use Task.emptyTask() instead
      */
-    public Task() {
-    }
+    public Task() {}
 
     public static Task emptyTask() {
         return new Task();
@@ -70,19 +75,20 @@ public class Task extends BaseObservable implements Parcelable {
         this.title = title;
     }
 
-    public Date getNotificationDate() {
+    public String getNotificationDate() {
         return notificationDate;
     }
 
-    public void setNotificationDate(@NonNull Date notificationDate) {
+    public void setNotificationDate(String notificationDate) {
         this.notificationDate = notificationDate;
     }
 
-    public String getPhotoFilename() {
-        return new StringBuilder("IMG_")
-                .append(getId())
-                .append(".jpg")
-                .toString();
+    public String getFileUUID() {
+        return fileUUID;
+    }
+
+    public void setFileUUID(String fileUUID) {
+        this.fileUUID = fileUUID;
     }
 
     public File getPhotoFile() {
@@ -91,6 +97,17 @@ public class Task extends BaseObservable implements Parcelable {
 
     public void setPhotoFile(File photoFile) {
         this.photoFile = photoFile;
+    }
+
+    public void setUUID() {
+        fileUUID = FilenameGenerator.getUUID().toString();
+    }
+
+    public String getPhotoFilename() {
+        return new StringBuilder("IMG_")
+                .append(fileUUID)
+                .append(".jpg")
+                .toString();
     }
 
     public void removePhotoFile() {
@@ -107,7 +124,8 @@ public class Task extends BaseObservable implements Parcelable {
         dest.writeLong(id);
         dest.writeString(title);
         dest.writeString(description);
-        dest.writeSerializable(notificationDate);
+        dest.writeString(notificationDate);
+        dest.writeString(fileUUID);
     }
 
     public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
@@ -117,7 +135,8 @@ public class Task extends BaseObservable implements Parcelable {
             task.setId(source.readLong());
             task.setTitle(source.readString());
             task.setDescription(source.readString());
-            task.setNotificationDate((Date) source.readSerializable());
+            task.setNotificationDate(source.readString());
+            task.setFileUUID(source.readString());
             return task;
         }
 

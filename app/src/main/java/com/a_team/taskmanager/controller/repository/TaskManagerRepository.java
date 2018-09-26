@@ -3,8 +3,10 @@ package com.a_team.taskmanager.controller.repository;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
 import com.a_team.taskmanager.database.TaskManagerDatabase;
@@ -60,8 +62,14 @@ public class TaskManagerRepository {
         if (isTaskWithCurrentIdExists(task.getId())) {
             mDatabase.taskDao().updateTasks(task);
         } else {
+            setTaskUuidIfNotSet(task);
             mDatabase.taskDao().insert(task);
         }
+    }
+
+    private void setTaskUuidIfNotSet(Task task) {
+        if (task.getFileUUID() == null)
+            task.setUUID();
     }
 
     private boolean isTaskWithCurrentIdExists(long taskId) {
