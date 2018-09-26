@@ -19,21 +19,15 @@ public interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Task task);
 
-    @Query("delete from Task")
-    void deleteAll();
-
     @Delete
-    int deleteTasks(Task... tasks);
+    void deleteTasks(Task... tasks);
 
     @Update
-    int updateTasks(Task... tasks);
+    void updateTasks(Task... tasks);
 
     @Query("select * from Task")
     LiveData<List<Task>> getAllTasks();
 
     @Query("select * from Task where id = :id")
     LiveData<Task> getTask(long id);
-
-    @Query("select * from Task where id = :id")
-    List<Task> isTaskExists(long id);
 }

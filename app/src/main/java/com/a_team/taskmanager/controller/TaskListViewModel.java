@@ -30,12 +30,7 @@ public class TaskListViewModel extends AndroidViewModel {
         mTasks.setValue(null);
 
         LiveData<List<Task>> tasks = ((BasicApp) application).getRepository().getTasks();
-        mTasks.addSource(tasks, new Observer<List<Task>>() {
-            @Override
-            public void onChanged(@Nullable List<Task> tasks) {
-                mTasks.setValue(tasks);
-            }
-        });
+        mTasks.addSource(tasks, tasks1 -> mTasks.setValue(tasks1));
 
         mExecutor = Executors.newSingleThreadExecutor();
 
@@ -47,12 +42,7 @@ public class TaskListViewModel extends AndroidViewModel {
     }
 
     public void deleteTasks(final Task... tasks) {
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mRepository.deleteTasks(tasks);
-            }
-        });
+        mExecutor.execute(() -> mRepository.deleteTasks(tasks));
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {

@@ -38,12 +38,9 @@ public class TaskManagerRepository {
         mDatabase = database;
         mObservableTasks = new MediatorLiveData<>();
 
-        mObservableTasks.addSource(mDatabase.taskDao().getAllTasks(), new Observer<List<Task>>() {
-            @Override
-            public void onChanged(@Nullable List<Task> tasks) {
-                if (mDatabase.getIsDatabaseCreated().getValue() != null) {
-                    mObservableTasks.postValue(tasks);
-                }
+        mObservableTasks.addSource(mDatabase.taskDao().getAllTasks(), tasks -> {
+            if (mDatabase.getIsDatabaseCreated().getValue() != null) {
+                mObservableTasks.postValue(tasks);
             }
         });
 
