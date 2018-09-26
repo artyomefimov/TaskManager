@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.a_team.taskmanager.Constants;
 import com.a_team.taskmanager.R;
@@ -56,6 +57,8 @@ public abstract class AbstractTaskFragment extends Fragment {
     protected Task mTask;
     protected TaskViewModel mViewModel;
     protected File mPhotoFile;
+
+    private boolean isShouldDeletePhoto;
 
     private OnChangedCallback mCallback;
 
@@ -209,6 +212,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                showReminderToSaveChanges();
             }
         });
     }
@@ -227,7 +231,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                showReminderToSaveChanges();
             }
         });
     }
@@ -261,11 +265,9 @@ public abstract class AbstractTaskFragment extends Fragment {
         popup.getMenuInflater().inflate(R.menu.popup_remove_photo, popup.getMenu());
 
         popup.setOnMenuItemClickListener((item -> {
-            Uri fileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
-            mViewModel.removePhotoFile(fileUri);
-            setPhotoFileForFragment();
-            updatePhotoView();
-
+            isShouldDeletePhoto = true;
+            mPhoto.setImageDrawable(null);
+            showReminderToSaveChanges();
             return true;
         }));
         popup.show();
@@ -314,6 +316,17 @@ public abstract class AbstractTaskFragment extends Fragment {
         }
     }
 
+    private void removePhotoIfNecessary() {
+        if (isShouldDeletePhoto) {
+            Uri fileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
+            mViewModel.removePhotoFile(fileUri);
+        }
+    }
+
+    private void showReminderToSaveChanges() {
+        Toast.makeText(getActivity(), R.string.save_changes, Toast.LENGTH_SHORT).show();
+    }
+
     protected void performPhotoUpdating() {
         setPhotoFile();
         updatePhotoView();
@@ -321,6 +334,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     protected void performSave() {
         updateTask();
+        removePhotoIfNecessary();
         finishActivity();
     }
 
