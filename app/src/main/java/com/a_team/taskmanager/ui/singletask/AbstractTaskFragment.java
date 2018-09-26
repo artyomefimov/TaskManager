@@ -2,6 +2,7 @@ package com.a_team.taskmanager.ui.singletask;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -56,6 +57,8 @@ public abstract class AbstractTaskFragment extends Fragment {
     protected TaskViewModel mViewModel;
     protected File mPhotoFile;
 
+    private OnChangedCallback mCallback;
+
     public static AbstractTaskFragment newInstance(Task task) {
         Bundle args = new Bundle();
         args.putParcelable(Constants.ARG_CURRENT_TASK, task);
@@ -86,21 +89,11 @@ public abstract class AbstractTaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.single_task_fragment, container, false);
 
         mMakePhotoButton = view.findViewById(R.id.task_edit_make_photo);
-
         mSetNotificationButton = view.findViewById(R.id.task_edit_add_notification);
-        configureSetNotificationButton();
-
 //        mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
-//        configureNotificationTimestampButton();
-
         mTitleField = view.findViewById(R.id.task_edit_title);
-        configureTitleField();
-
         mDescriptionField = view.findViewById(R.id.task_edit_description);
-        configureDescriptionField();
-
         mPhoto = view.findViewById(R.id.task_edit_photo);
-        configurePhotoView();
 
         return view;
     }
@@ -128,6 +121,72 @@ public abstract class AbstractTaskFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        receiveTaskFromBundle();
+        if (isReceivedTaskNotNew()) {
+            createViewModelAndSubscribeUi();
+            setActionBarTitle(mTask.getTitle());
+        } else {
+            createViewModel();
+            setActionBarTitle(CREATE_TASK_TITLE);
+        }
+        configureButtons();
+    }
+
+    private void configureButtons() {
+        configureSetNotificationButton();
+        //        configureNotificationTimestampButton();
+        configureTitleField();
+        configureDescriptionField();
+        configureMakePhotoButton();
+        configurePhotoView();
+    }
+
+    private void receiveTaskFromBundle() {
+        mTask = getArguments().getParcelable(Constants.ARG_CURRENT_TASK);
+    }
+
+    private boolean isReceivedTaskNotNew() {
+        return mTask != null && !mTask.equals(Task.emptyTask());
+    }
+
+    private void createViewModelAndSubscribeUi() {
+        TaskViewModel.Factory factory = new TaskViewModel.Factory(
+                getActivity().getApplication(),
+                mTask.getId());
+        mViewModel = ViewModelProviders.of(this, factory).get(TaskViewModel.class);
+        subscribeUi();
+        updateUI(mTask);
+    }
+
+    private void createViewModel() {
+        TaskViewModel.Factory factory = new TaskViewModel.Factory(
+                getActivity().getApplication(),
+                Constants.BAD_TASK_ID);
+        mViewModel = ViewModelProviders.of(this, factory).get(TaskViewModel.class);
+    }
+
+    private void subscribeUi() {
+        mViewModel.getTask().observe(this, task -> updateUI(task));
+    }
+
+    private void updateUI(Task task) {
+        if (task != null) {
+            mTitleField.setText(task.getTitle());
+            mDescriptionField.setText(task.getDescription());
+            //mNotificationTimestamp.setText(task.getNotificationDate().toString()); // todo add notification feature
+        }
+    }
+
+    private void setActionBarTitle(String title) {
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle(title);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
     private void configureSetNotificationButton() {
         // adding a notification for the specific time in future
     }
@@ -150,7 +209,6 @@ public abstract class AbstractTaskFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
     }
@@ -207,66 +265,10 @@ public abstract class AbstractTaskFragment extends Fragment {
             mViewModel.removePhotoFile(fileUri);
             setPhotoFileForFragment();
             updatePhotoView();
+
             return true;
         }));
         popup.show();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        receiveTaskFromBundle();
-        if (isReceivedTaskNotNew()) {
-            createViewModelAndSubscribeUi();
-            setActionBarTitle(mTask.getTitle());
-        } else {
-            createViewModel();
-            setActionBarTitle(CREATE_TASK_TITLE);
-        }
-        configureMakePhotoButton();
-    }
-
-    private void receiveTaskFromBundle() {
-        mTask = getArguments().getParcelable(Constants.ARG_CURRENT_TASK);
-    }
-
-    private boolean isReceivedTaskNotNew() {
-        return mTask != null && !mTask.equals(Task.emptyTask());
-    }
-
-    private void createViewModelAndSubscribeUi() {
-        TaskViewModel.Factory factory = new TaskViewModel.Factory(
-                getActivity().getApplication(),
-                mTask.getId());
-        mViewModel = ViewModelProviders.of(this, factory).get(TaskViewModel.class);
-        subscribeUi();
-        updateUI(mTask);
-    }
-
-    private void createViewModel() {
-        TaskViewModel.Factory factory = new TaskViewModel.Factory(
-                getActivity().getApplication(),
-                Constants.BAD_TASK_ID);
-        mViewModel = ViewModelProviders.of(this, factory).get(TaskViewModel.class);
-    }
-
-    private void subscribeUi() {
-        mViewModel.getTask().observe(this, task -> updateUI(task));
-    }
-
-    private void updateUI(Task task) {
-        if (task != null) {
-            mTitleField.setText(task.getTitle());
-            mDescriptionField.setText(task.getDescription());
-            //mNotificationTimestamp.setText(task.getNotificationDate().toString()); // todo add notification feature
-        }
-    }
-
-    private void setActionBarTitle(String title) {
-        AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle(title);
-        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -304,6 +306,14 @@ public abstract class AbstractTaskFragment extends Fragment {
         getActivity().finish();
     }
 
+    private void setIfDataChanged() {
+        Task receivedTask = getArguments().getParcelable(Constants.ARG_CURRENT_TASK);
+        if (!mTask.getTitle().equals(receivedTask.getTitle()) ||
+                !mTask.getDescription().equals(receivedTask.getDescription())) {
+            mCallback.onDataChanged(true);
+        }
+    }
+
     protected void performPhotoUpdating() {
         setPhotoFile();
         updatePhotoView();
@@ -317,5 +327,21 @@ public abstract class AbstractTaskFragment extends Fragment {
     protected void performDelete() {
         deleteTask();
         finishActivity();
+    }
+
+    public interface OnChangedCallback {
+        void onDataChanged(boolean isChanged);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallback = ((OnChangedCallback) context);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallback = null;
     }
 }

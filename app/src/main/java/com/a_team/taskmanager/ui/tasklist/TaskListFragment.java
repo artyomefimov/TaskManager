@@ -135,12 +135,9 @@ public class TaskListFragment extends Fragment {
     }
 
     private void configureFloatingActionButton() {
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = SingleTaskActivity.newIntent(getActivity(), Task.emptyTask());
-                startActivityForResult(intent, REQUEST_CODE);
-            }
+        mFloatingActionButton.setOnClickListener(view -> {
+            Intent intent = SingleTaskActivity.newIntent(getActivity(), Task.emptyTask());
+            startActivityForResult(intent, REQUEST_CODE);
         });
     }
 
@@ -269,7 +266,6 @@ public class TaskListFragment extends Fragment {
         private Task mTask;
         private TextView mTitle;
         private TextView mDescription;
-        private CardView mCardView;
         private ImageView mImage;
 
         private TaskListViewHolder(View view, MultiSelector selector) {
@@ -277,7 +273,6 @@ public class TaskListFragment extends Fragment {
 
             mTitle = itemView.findViewById(R.id.task_title);
             mDescription = itemView.findViewById(R.id.task_description);
-            mCardView = itemView.findViewById(R.id.card_view_task);
             mImage = itemView.findViewById(R.id.task_image);
 
             itemView.setOnClickListener(this);
@@ -306,8 +301,22 @@ public class TaskListFragment extends Fragment {
                 Intent intent = SingleTaskActivity.newIntent(getActivity(), mTask);
                 startActivityForResult(intent, REQUEST_CODE);
             } else {
-                selectCurrentTask();
+                if (isCurrentTaskAlreadySelected()) {
+                    removeSelection();
+                } else {
+                    selectCurrentTask();
+                }
             }
+        }
+
+        private boolean isCurrentTaskAlreadySelected() {
+            return !mMultiSelector.isSelected(getAdapterPosition(), 0);
+        }
+
+        private void removeSelection() {
+            mMultiSelector.setSelected(TaskListViewHolder.this, false);
+            TaskListAdapter adapter = ((TaskListAdapter) mRecyclerView.getAdapter());
+            adapter.removeSelectedTask(getAdapterPosition());
         }
 
         @Override
@@ -370,6 +379,15 @@ public class TaskListFragment extends Fragment {
         private void addSelectedTask(int position) {
             Task task = mTasks.get(position);
             mSelectedTasksIds.add(task);
+        }
+
+        private void removeSelectedTask(int position) {
+            Task task = mTasks.get(position);
+            mSelectedTasksIds.remove(task);
+            if (mSelectedTasksIds.size() == 0) {
+                mMultiSelector.setSelectable(false);
+                mActionModeCallback.onDestroyActionMode(null);
+            }
         }
     }
 }

@@ -15,4 +15,10 @@
     <string name="ok">OK</string>
 
     <string name="remove">Remove</string>
+    
+    <string name="confirm_title">Warning</string>
+    <string name="confirm_message">Not saved data will be lost. Confirm?</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

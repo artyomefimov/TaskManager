@@ -1,5 +1,6 @@
 package com.a_team.taskmanager.ui.singletask;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,9 +9,11 @@ import android.support.v4.app.Fragment;
 
 import com.a_team.taskmanager.Constants;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.SingleFragmentActivity;
+import com.a_team.taskmanager.ui.FragmentActivity;
 
-public class SingleTaskActivity extends SingleFragmentActivity {
+public class SingleTaskActivity extends FragmentActivity implements AbstractTaskFragment.OnChangedCallback {
+
+    private boolean isDataChanged;
 
     @NonNull
     public static Intent newIntent(Context context, Task task) {
@@ -33,5 +36,14 @@ public class SingleTaskActivity extends SingleFragmentActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    public void onDataChanged(boolean isDataChanged) {
+        if (isDataChanged) {
+            new ConfirmationDialog(this);
+        } else {
+            onSupportNavigateUp();
+        }
     }
 }

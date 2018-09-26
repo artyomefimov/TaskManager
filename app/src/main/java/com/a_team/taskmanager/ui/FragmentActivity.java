@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.a_team.taskmanager.R;
 
-public abstract class SingleFragmentActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
+public abstract class FragmentActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
     private FragmentManager fragmentManager;
     protected abstract Fragment createFragment();
 
