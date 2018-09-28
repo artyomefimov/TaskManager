@@ -24,12 +24,9 @@ public class TaskViewModel extends AndroidViewModel {
 
     private Executor mExecutor;
 
-    private long mTaskId;
-
-    public TaskViewModel(@NonNull Application application, TaskManagerRepository repository, long taskId) {
+    public TaskViewModel(@NonNull Application application, TaskManagerRepository repository) {
         super(application);
         mRepository = repository;
-        mTaskId = taskId;
         mLiveDataTask = new MutableLiveData<>();
         mExecutor = Executors.newSingleThreadExecutor();
     }
@@ -58,11 +55,9 @@ public class TaskViewModel extends AndroidViewModel {
 
         private final Application mApplication;
         private final TaskManagerRepository mRepository;
-        private final long mTaskId;
 
-        public Factory(@NonNull Application application, long taskId) {
+        public Factory(@NonNull Application application) {
             mApplication = application;
-            mTaskId = taskId;
             mRepository = ((BasicApp) application).getRepository();
         }
 
@@ -70,7 +65,7 @@ public class TaskViewModel extends AndroidViewModel {
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
-            return (T) new TaskViewModel(mApplication, mRepository, mTaskId);
+            return (T) new TaskViewModel(mApplication, mRepository);
         }
     }
 }

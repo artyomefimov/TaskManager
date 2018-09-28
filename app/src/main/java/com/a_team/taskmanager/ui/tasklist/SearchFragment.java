@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.singletask.SingleTaskActivity;
+import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 
 import java.util.Collections;
 import java.util.List;

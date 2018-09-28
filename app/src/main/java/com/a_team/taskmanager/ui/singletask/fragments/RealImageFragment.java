@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.singletask;
+package com.a_team.taskmanager.ui.singletask.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;

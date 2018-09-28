@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
+import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.database.TaskManagerDatabase;
 import com.a_team.taskmanager.entity.Task;
 

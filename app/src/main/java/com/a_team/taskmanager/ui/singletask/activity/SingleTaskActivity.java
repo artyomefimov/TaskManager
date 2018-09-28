@@ -1,15 +1,17 @@
-package com.a_team.taskmanager.ui.singletask;
+package com.a_team.taskmanager.ui.singletask.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
-import com.a_team.taskmanager.Constants;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.FragmentActivity;
+import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
+import com.a_team.taskmanager.ui.singletask.ConfirmationDialog;
+
+import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
 
 public class SingleTaskActivity extends FragmentActivity implements AbstractTaskFragment.OnChangedCallback {
 
@@ -17,12 +19,12 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
 
     @NonNull
     public static Intent newIntent(Context context, Task task) {
-        return new Intent(context, SingleTaskActivity.class).putExtra(Constants.ARG_CURRENT_TASK, task);
+        return new Intent(context, SingleTaskActivity.class).putExtra(ARG_CURRENT_TASK, task);
     }
 
     @Override
     protected Fragment createFragment() {
-        Task task = getIntent().getParcelableExtra(Constants.ARG_CURRENT_TASK);
+        Task task = getIntent().getParcelableExtra(ARG_CURRENT_TASK);
         return AbstractTaskFragment.newInstance(task);
     }
 

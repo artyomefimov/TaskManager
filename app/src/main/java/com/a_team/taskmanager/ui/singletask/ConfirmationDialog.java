@@ -11,7 +11,7 @@ public class ConfirmationDialog extends AlertDialog {
 
     private AlertDialog.Builder mBuilder;
 
-    protected ConfirmationDialog(@NonNull Context context) {
+    public ConfirmationDialog(@NonNull Context context) {
         super(context);
         mBuilder = new AlertDialog.Builder(context);
         mBuilder.setTitle(R.string.confirm_title)

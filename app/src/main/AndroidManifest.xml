@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.singletask.SingleTaskActivity">
+            android:name=".ui.singletask.activity.SingleTaskActivity">
         </activity>
 
         <provider

@@ -1,7 +1,6 @@
 package com.a_team.taskmanager.ui.tasklist;
 
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -30,14 +28,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.controller.TaskListViewModel;
 import com.a_team.taskmanager.controller.utils.PictureUtils;
 import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.singletask.SingleTaskActivity;
+import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;

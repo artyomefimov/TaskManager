@@ -1,22 +1,13 @@
-package com.a_team.taskmanager.ui.singletask;
+package com.a_team.taskmanager.ui.singletask.fragments;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -28,24 +19,21 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.a_team.taskmanager.Constants;
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.controller.TaskViewModel;
-import com.a_team.taskmanager.controller.utils.PictureUtils;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
+import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
+import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
 
-import java.io.File;
-import java.util.List;
+import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
+import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
 
 public abstract class AbstractTaskFragment extends Fragment {
     private static final String ARG_TITLE = "title";
     private static final String ARG_DESCRIPTION = "description";
     private static final String ARG_TIMESTAMP = "timestamp";
-    public static final String FILE_PROVIDER = "com.artyom.criminalintent.fileprovider";
-    private static final int REQUEST_PHOTO = 2;
     private static final int REQUEST_REAL_PHOTO = 3;
     private static final String DIALOG_IMAGE = "DialogImage";
-    private static final String CREATE_TASK_TITLE = "Create task";
 
     protected FloatingActionButton mMakePhotoButton;
     protected FloatingActionButton mSetNotificationButton;
@@ -55,16 +43,16 @@ public abstract class AbstractTaskFragment extends Fragment {
     protected ImageView mPhoto;
 
     protected Task mTask;
-    protected TaskViewModel mViewModel;
-    protected File mPhotoFile;
 
-    private boolean isShouldDeletePhoto;
+    private PhotoManager mPhotoManager;
+    private InitializationManager mInitializationManager;
+    private TaskOperationsManager mTaskOperationsManager;
 
     private OnChangedCallback mCallback;
 
     public static AbstractTaskFragment newInstance(Task task) {
         Bundle args = new Bundle();
-        args.putParcelable(Constants.ARG_CURRENT_TASK, task);
+        args.putParcelable(ARG_CURRENT_TASK, task);
 
         AbstractTaskFragment fragment;
         fragment = task.equals(Task.emptyTask()) ? new NewTaskFragment() : new TaskEditFragment();
@@ -93,7 +81,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
         mMakePhotoButton = view.findViewById(R.id.task_edit_make_photo);
         mSetNotificationButton = view.findViewById(R.id.task_edit_add_notification);
-//        mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
+//      mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
         mTitleField = view.findViewById(R.id.task_edit_title);
         mDescriptionField = view.findViewById(R.id.task_edit_description);
         mPhoto = view.findViewById(R.id.task_edit_photo);
@@ -102,45 +90,29 @@ public abstract class AbstractTaskFragment extends Fragment {
     }
 
     private void configureMakePhotoButton() {
-        final Intent makePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        PackageManager packageManager = getActivity().getPackageManager();
-
-        boolean canTakePhoto = makePhotoIntent.resolveActivity(packageManager) != null;
-        if (canTakePhoto) {
-            mMakePhotoButton.setOnClickListener((view) -> {
-                Uri uri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
-                makePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-
-                List<ResolveInfo> cameraActivities = packageManager
-                        .queryIntentActivities(makePhotoIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                for (ResolveInfo info : cameraActivities) {
-                    getActivity().grantUriPermission(info.activityInfo.packageName, uri,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
-
-                startActivityForResult(makePhotoIntent, REQUEST_PHOTO);
-            });
-        }
+        mPhotoManager.configurePhotoButton(this, mMakePhotoButton);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         receiveTaskFromBundle();
-        if (isReceivedTaskNotNew()) {
-            createViewModelAndSubscribeUi();
-            setActionBarTitle(mTask.getTitle());
-        } else {
-            createViewModel();
-            setActionBarTitle(CREATE_TASK_TITLE);
-        }
+        initManagers();
         configureButtons();
+    }
+
+    private void initManagers() {
+        mInitializationManager = InitializationManager.getInstance();
+        mInitializationManager.setTask(mTask);
+        mInitializationManager.initViewModel(this);
+        mPhotoManager = PhotoManager.getInstance();
+        mTaskOperationsManager = TaskOperationsManager.getInstance(mInitializationManager.getViewModel());
+        mTaskOperationsManager.setTask(mTask);
     }
 
     private void configureButtons() {
         configureSetNotificationButton();
-        //        configureNotificationTimestampButton();
+        //configureNotificationTimestampButton();
         configureTitleField();
         configureDescriptionField();
         configureMakePhotoButton();
@@ -148,46 +120,7 @@ public abstract class AbstractTaskFragment extends Fragment {
     }
 
     private void receiveTaskFromBundle() {
-        mTask = getArguments().getParcelable(Constants.ARG_CURRENT_TASK);
-    }
-
-    private boolean isReceivedTaskNotNew() {
-        return mTask != null && !mTask.equals(Task.emptyTask());
-    }
-
-    private void createViewModelAndSubscribeUi() {
-        TaskViewModel.Factory factory = new TaskViewModel.Factory(
-                getActivity().getApplication(),
-                mTask.getId());
-        mViewModel = ViewModelProviders.of(this, factory).get(TaskViewModel.class);
-        subscribeUi();
-        updateUI(mTask);
-    }
-
-    private void createViewModel() {
-        TaskViewModel.Factory factory = new TaskViewModel.Factory(
-                getActivity().getApplication(),
-                Constants.BAD_TASK_ID);
-        mViewModel = ViewModelProviders.of(this, factory).get(TaskViewModel.class);
-    }
-
-    private void subscribeUi() {
-        mViewModel.getTask().observe(this, task -> updateUI(task));
-    }
-
-    private void updateUI(Task task) {
-        if (task != null) {
-            mTitleField.setText(task.getTitle());
-            mDescriptionField.setText(task.getDescription());
-            //mNotificationTimestamp.setText(task.getNotificationDate().toString()); // todo add notification feature
-        }
-    }
-
-    private void setActionBarTitle(String title) {
-        AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle(title);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        mTask = getArguments().getParcelable(ARG_CURRENT_TASK);
     }
 
     private void configureSetNotificationButton() {
@@ -236,19 +169,10 @@ public abstract class AbstractTaskFragment extends Fragment {
         });
     }
 
-    private void setPhotoFile() {
-        mPhotoFile = mViewModel.getPhotoFile(mTask);
-        mTask.setPhotoFile(mPhotoFile);
-    }
-
-    private void setPhotoFileForFragment() {
-        mPhotoFile = mViewModel.getPhotoFile(mTask);
-    }
-
     private void configurePhotoView() {
         mPhoto.setOnClickListener((view) -> {
             if (getFragmentManager() != null) {
-                RealImageFragment fragment = RealImageFragment.newInstance(mPhotoFile);
+                RealImageFragment fragment = RealImageFragment.newInstance(mPhotoManager.getPhotoFile());
                 fragment.setTargetFragment(AbstractTaskFragment.this, REQUEST_REAL_PHOTO);
                 fragment.show(getFragmentManager(), DIALOG_IMAGE);
             }
@@ -265,8 +189,7 @@ public abstract class AbstractTaskFragment extends Fragment {
         popup.getMenuInflater().inflate(R.menu.popup_remove_photo, popup.getMenu());
 
         popup.setOnMenuItemClickListener((item -> {
-            isShouldDeletePhoto = true;
-            mPhoto.setImageDrawable(null);
+            mPhotoManager.markPhotoForDelete(mPhoto);
             showReminderToSaveChanges();
             return true;
         }));
@@ -279,28 +202,8 @@ public abstract class AbstractTaskFragment extends Fragment {
             return;
         switch (requestCode) {
             case REQUEST_PHOTO:
-                Uri uri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
-                getActivity().revokeUriPermission(uri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                updatePhotoView();
+                mPhotoManager.getPhotoFromCamera(getActivity(), mPhoto);
         }
-    }
-
-    private void updatePhotoView() {
-        if (mPhotoFile == null || !mPhotoFile.exists()) {
-            mPhoto.setImageDrawable(null);
-        } else {
-            Bitmap scaledBitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
-            mPhoto.setImageBitmap(scaledBitmap);
-        }
-    }
-
-    private void updateTask() {
-        mViewModel.updateOrInsertTask(mTask);
-    }
-
-    private void deleteTask() {
-        mViewModel.deleteTask(mTask);
     }
 
     private void finishActivity() {
@@ -308,39 +211,36 @@ public abstract class AbstractTaskFragment extends Fragment {
         getActivity().finish();
     }
 
-    private void setIfDataChanged() {
-        Task receivedTask = getArguments().getParcelable(Constants.ARG_CURRENT_TASK);
-        if (!mTask.getTitle().equals(receivedTask.getTitle()) ||
-                !mTask.getDescription().equals(receivedTask.getDescription())) {
-            mCallback.onDataChanged(true);
-        }
-    }
-
-    private void removePhotoIfNecessary() {
-        if (isShouldDeletePhoto) {
-            Uri fileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, mPhotoFile);
-            mViewModel.removePhotoFile(fileUri);
-        }
-    }
-
     private void showReminderToSaveChanges() {
         Toast.makeText(getActivity(), R.string.save_changes, Toast.LENGTH_SHORT).show();
     }
 
     protected void performPhotoUpdating() {
-        setPhotoFile();
-        updatePhotoView();
+        mPhotoManager.setPhotoFile(mInitializationManager.getViewModel(), mTask);
+        mPhotoManager.updatePhotoView(getActivity(), mPhoto);
     }
 
     protected void performSave() {
-        updateTask();
-        removePhotoIfNecessary();
+        mTaskOperationsManager.updateTask();
+        mPhotoManager.removePhotoIfNecessary(getActivity(), mInitializationManager.getViewModel());
         finishActivity();
     }
 
     protected void performDelete() {
-        deleteTask();
+        mTaskOperationsManager.deleteTask();
         finishActivity();
+    }
+
+    public TextView getNotificationTimestamp() {
+        return mNotificationTimestamp;
+    }
+
+    public EditText getTitleField() {
+        return mTitleField;
+    }
+
+    public EditText getDescriptionField() {
+        return mDescriptionField;
     }
 
     public interface OnChangedCallback {
