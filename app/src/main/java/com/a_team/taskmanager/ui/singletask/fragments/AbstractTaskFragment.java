@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.ui.singletask.ConfirmationDialog;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
@@ -49,6 +50,8 @@ public abstract class AbstractTaskFragment extends Fragment {
     private TaskOperationsManager mTaskOperationsManager;
 
     private OnChangedCallback mCallback;
+
+    private boolean isDataChanged;
 
     public static AbstractTaskFragment newInstance(Task task) {
         Bundle args = new Bundle();
@@ -105,7 +108,7 @@ public abstract class AbstractTaskFragment extends Fragment {
         mInitializationManager = InitializationManager.getInstance();
         mInitializationManager.setTask(mTask);
         mInitializationManager.initViewModel(this);
-        mPhotoManager = PhotoManager.getInstance();
+        mPhotoManager = PhotoManager.getInstance(mInitializationManager.getViewModel());
         mTaskOperationsManager = TaskOperationsManager.getInstance(mInitializationManager.getViewModel());
         mTaskOperationsManager.setTask(mTask);
     }
@@ -141,11 +144,11 @@ public abstract class AbstractTaskFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mTask.setTitle(s.toString());
+                mCallback.onDataChanged(true);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                showReminderToSaveChanges();
             }
         });
     }
@@ -160,11 +163,11 @@ public abstract class AbstractTaskFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mTask.setDescription(s.toString());
+                mCallback.onDataChanged(true);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                showReminderToSaveChanges();
             }
         });
     }
@@ -189,8 +192,7 @@ public abstract class AbstractTaskFragment extends Fragment {
         popup.getMenuInflater().inflate(R.menu.popup_remove_photo, popup.getMenu());
 
         popup.setOnMenuItemClickListener((item -> {
-            mPhotoManager.markPhotoForDelete(mPhoto);
-            showReminderToSaveChanges();
+            mPhotoManager.markPhotoForDelete(this, mPhoto);
             return true;
         }));
         popup.show();
@@ -202,17 +204,13 @@ public abstract class AbstractTaskFragment extends Fragment {
             return;
         switch (requestCode) {
             case REQUEST_PHOTO:
-                mPhotoManager.getPhotoFromCamera(getActivity(), mPhoto);
+                mPhotoManager.getPhotoFromCamera(this, mPhoto);
         }
     }
 
     private void finishActivity() {
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
-    }
-
-    private void showReminderToSaveChanges() {
-        Toast.makeText(getActivity(), R.string.save_changes, Toast.LENGTH_SHORT).show();
     }
 
     protected void performPhotoUpdating() {
@@ -222,7 +220,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     protected void performSave() {
         mTaskOperationsManager.updateTask();
-        mPhotoManager.removePhotoIfNecessary(getActivity(), mInitializationManager.getViewModel());
+        mPhotoManager.removePhotoIfNecessary(getActivity());
         finishActivity();
     }
 
@@ -241,6 +239,10 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     public EditText getDescriptionField() {
         return mDescriptionField;
+    }
+
+    public OnChangedCallback getCallback() {
+        return mCallback;
     }
 
     public interface OnChangedCallback {

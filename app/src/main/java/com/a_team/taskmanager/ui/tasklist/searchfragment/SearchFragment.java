@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.tasklist;
+package com.a_team.taskmanager.ui.tasklist.searchfragment;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -101,16 +101,12 @@ public class SearchFragment extends Fragment {
         private Task mTask;
         private TextView mTitle;
         private TextView mDescription;
-        private CardView mCardView;
-        private ImageView mImage;
 
         public SearchViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_task, parent, false));
 
             mTitle = itemView.findViewById(R.id.task_title);
             mDescription = itemView.findViewById(R.id.task_description);
-            mCardView = itemView.findViewById(R.id.card_view_task);
-            mImage = itemView.findViewById(R.id.task_image);
 
             itemView.setOnClickListener(this);
         }

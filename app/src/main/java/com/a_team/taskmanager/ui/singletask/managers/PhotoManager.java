@@ -17,6 +17,8 @@ import com.a_team.taskmanager.controller.utils.PictureUtils;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.util.List;
 
@@ -28,16 +30,23 @@ public class PhotoManager {
 
     private boolean isShouldDeletePhoto;
     private File mPhotoFile;
-    private File mTempPhotoFile;
 
-    public static PhotoManager getInstance() {
+    private TaskViewModel mViewModel;
+
+    public static PhotoManager getInstance(TaskViewModel viewModel) {
         if (ourInstance == null) {
-            ourInstance = new PhotoManager();
+            ourInstance = new PhotoManager(viewModel);
         }
         return ourInstance;
     }
 
-    private PhotoManager() {
+    @Nullable
+    public static PhotoManager getInstance() {
+        return ourInstance;
+    }
+
+    private PhotoManager(TaskViewModel viewModel) {
+        mViewModel = viewModel;
     }
 
     public void configurePhotoButton(Fragment fragment, View photoButton) {
@@ -63,9 +72,10 @@ public class PhotoManager {
         }
     }
 
-    public void markPhotoForDelete(ImageView imageView) {
+    public void markPhotoForDelete(AbstractTaskFragment fragment, ImageView imageView) {
         isShouldDeletePhoto = true;
         imageView.setImageDrawable(null);
+        fragment.getCallback().onDataChanged(true);
     }
 
     public void setPhotoFile(TaskViewModel viewModel, Task task) {
@@ -82,17 +92,18 @@ public class PhotoManager {
         }
     }
 
-    public void getPhotoFromCamera(Activity activity, ImageView imageView) {
-        Uri uri = FileProvider.getUriForFile(activity, FILE_PROVIDER, mPhotoFile);
-        activity.revokeUriPermission(uri,
+    public void getPhotoFromCamera(AbstractTaskFragment fragment, ImageView imageView) {
+        Uri uri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, mPhotoFile);
+        fragment.getActivity().revokeUriPermission(uri,
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        updatePhotoView(activity, imageView);
+        updatePhotoView(fragment.getActivity(), imageView);
+        fragment.getCallback().onDataChanged(true);
     }
 
-    public void removePhotoIfNecessary(Activity activity, TaskViewModel viewModel) {
+    public void removePhotoIfNecessary(Activity activity) {
         if (isShouldDeletePhoto) {
             Uri fileUri = FileProvider.getUriForFile(activity, FILE_PROVIDER, mPhotoFile);
-            viewModel.removePhotoFile(fileUri);
+            mViewModel.removePhotoFile(fileUri);
         }
     }
 

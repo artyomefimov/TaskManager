@@ -36,16 +36,25 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        showConfirmOrFinish();
         return true;
     }
 
     @Override
+    public void onBackPressed() {
+        showConfirmOrFinish();
+    }
+
+    @Override
     public void onDataChanged(boolean isDataChanged) {
+        this.isDataChanged = isDataChanged;
+    }
+
+    private void showConfirmOrFinish() {
         if (isDataChanged) {
-            new ConfirmationDialog(this);
+            new ConfirmationDialog(this).showDialog();
         } else {
-            onSupportNavigateUp();
+            finish();
         }
     }
 }
