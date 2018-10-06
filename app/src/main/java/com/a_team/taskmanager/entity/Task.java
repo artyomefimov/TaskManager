@@ -5,19 +5,14 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
-import android.databinding.BaseObservable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
+import com.a_team.taskmanager.controller.utils.FilenameGenerator;
 import com.a_team.taskmanager.database.dao.DateConverter;
 
 import java.io.File;
-import java.sql.Date;
 import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
 
 @Entity(tableName = "Task")
 @TypeConverters({DateConverter.class})
@@ -104,10 +99,7 @@ public class Task implements Parcelable {
     }
 
     public String getPhotoFilename() {
-        return new StringBuilder("IMG_")
-                .append(fileUUID)
-                .append(".jpg")
-                .toString();
+        return fileUUID + ".jpg";
     }
 
     public void removePhotoFile() {

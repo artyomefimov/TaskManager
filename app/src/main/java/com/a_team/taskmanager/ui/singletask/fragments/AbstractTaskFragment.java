@@ -17,11 +17,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.a_team.taskmanager.R;
+import com.a_team.taskmanager.controller.utils.FilenameGenerator;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.singletask.ConfirmationDialog;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
@@ -33,6 +32,7 @@ public abstract class AbstractTaskFragment extends Fragment {
     private static final String ARG_TITLE = "title";
     private static final String ARG_DESCRIPTION = "description";
     private static final String ARG_TIMESTAMP = "timestamp";
+    private static final String ARG_TEMP_FILENAME = "tempfilename";
     private static final int REQUEST_REAL_PHOTO = 3;
     private static final String DIALOG_IMAGE = "DialogImage";
 
@@ -51,7 +51,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     private OnChangedCallback mCallback;
 
-    private boolean isDataChanged;
+    private String mTempFileName;
 
     public static AbstractTaskFragment newInstance(Task task) {
         Bundle args = new Bundle();
@@ -74,6 +74,7 @@ public abstract class AbstractTaskFragment extends Fragment {
         //outState.putString(ARG_TIMESTAMP, mNotificationTimestamp.getText().toString());
         outState.putString(ARG_TITLE, mTitleField.getText().toString());
         outState.putString(ARG_DESCRIPTION, mDescriptionField.getText().toString());
+        outState.putString(ARG_TEMP_FILENAME, mTempFileName);
         super.onSaveInstanceState(outState);
     }
 
@@ -92,23 +93,24 @@ public abstract class AbstractTaskFragment extends Fragment {
         return view;
     }
 
-    private void configureMakePhotoButton() {
-        mPhotoManager.configurePhotoButton(this, mMakePhotoButton);
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        receiveTaskFromBundle();
+        receiveArgsFromBundle();
         initManagers();
         configureButtons();
+    }
+
+    private void receiveArgsFromBundle() {
+        mTempFileName = getArguments().getString(ARG_TEMP_FILENAME);
+        mTask = getArguments().getParcelable(ARG_CURRENT_TASK);
     }
 
     private void initManagers() {
         mInitializationManager = InitializationManager.getInstance();
         mInitializationManager.setTask(mTask);
         mInitializationManager.initViewModel(this);
-        mPhotoManager = PhotoManager.getInstance(mInitializationManager.getViewModel());
+        mPhotoManager = PhotoManager.getInstance(mInitializationManager.getViewModel(), mTask);
         mTaskOperationsManager = TaskOperationsManager.getInstance(mInitializationManager.getViewModel());
         mTaskOperationsManager.setTask(mTask);
     }
@@ -120,10 +122,6 @@ public abstract class AbstractTaskFragment extends Fragment {
         configureDescriptionField();
         configureMakePhotoButton();
         configurePhotoView();
-    }
-
-    private void receiveTaskFromBundle() {
-        mTask = getArguments().getParcelable(ARG_CURRENT_TASK);
     }
 
     private void configureSetNotificationButton() {
@@ -145,6 +143,7 @@ public abstract class AbstractTaskFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mTask.setTitle(s.toString());
                 mCallback.onDataChanged(true);
+                mCallback.taskChanged(mTask);
             }
 
             @Override
@@ -164,12 +163,17 @@ public abstract class AbstractTaskFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mTask.setDescription(s.toString());
                 mCallback.onDataChanged(true);
+                mCallback.taskChanged(mTask);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    private void configureMakePhotoButton() {
+        mPhotoManager.configurePhotoButton(this, mMakePhotoButton);
     }
 
     private void configurePhotoView() {
@@ -214,13 +218,15 @@ public abstract class AbstractTaskFragment extends Fragment {
     }
 
     protected void performPhotoUpdating() {
+        if (mTempFileName == null)
+            mTempFileName = FilenameGenerator.getTempName();
+        mPhotoManager.setTempPhotoFileName(mTempFileName);
         mPhotoManager.setPhotoFile(mInitializationManager.getViewModel(), mTask);
         mPhotoManager.updatePhotoView(getActivity(), mPhoto);
     }
 
     protected void performSave() {
-        mTaskOperationsManager.updateTask();
-        mPhotoManager.removePhotoIfNecessary(getActivity());
+        mTaskOperationsManager.updateTask(getActivity());
         finishActivity();
     }
 
@@ -247,6 +253,7 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     public interface OnChangedCallback {
         void onDataChanged(boolean isChanged);
+        void taskChanged(Task task);
     }
 
     @Override

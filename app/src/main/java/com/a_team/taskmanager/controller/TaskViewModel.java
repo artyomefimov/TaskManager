@@ -8,7 +8,6 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
 
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
@@ -39,8 +38,8 @@ public class TaskViewModel extends AndroidViewModel {
         mExecutor.execute(() -> mRepository.updateOrInsertTask(task));
     }
 
-    public File getPhotoFile(Task task) {
-        return mRepository.getPhotoFile(task);
+    public File getPhotoFile(String fileName) {
+        return mRepository.getPhotoFile(fileName);
     }
 
     public void removePhotoFile(Uri uri) {

@@ -6,8 +6,10 @@ import android.arch.lifecycle.Observer;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.database.TaskManagerDatabase;
@@ -48,10 +50,6 @@ public class TaskManagerRepository {
         mContext = applicationContext;
     }
 
-    public LiveData<Task> getTask(long taskId) {
-        return mDatabase.taskDao().getTask(taskId);
-    }
-
     public LiveData<List<Task>> getTasks() {
         return mDatabase.taskDao().getAllTasks();
     }
@@ -79,9 +77,9 @@ public class TaskManagerRepository {
         mDatabase.taskDao().deleteTasks(tasks);
     }
 
-    public File getPhotoFile(Task task) {
+    public File getPhotoFile(String fileName) {
         File filesDir = mContext.getFilesDir();
-        return new File(filesDir, task.getPhotoFilename());
+        return new File(filesDir, fileName);
     }
 
     public void removePhotoFile(Uri uri) {

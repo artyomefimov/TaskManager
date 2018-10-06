@@ -50,6 +50,11 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
         this.isDataChanged = isDataChanged;
     }
 
+    @Override
+    public void taskChanged(Task task) {
+
+    }
+
     private void showConfirmOrFinish() {
         if (isDataChanged) {
             new ConfirmationDialog(this).showDialog();

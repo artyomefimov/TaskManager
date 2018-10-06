@@ -1,5 +1,7 @@
 package com.a_team.taskmanager.ui.singletask.managers;
 
+import android.app.Activity;
+
 import com.a_team.taskmanager.controller.TaskViewModel;
 import com.a_team.taskmanager.entity.Task;
 
@@ -20,7 +22,13 @@ public class TaskOperationsManager {
         mViewModel = viewModel;
     }
 
-    public void updateTask() {
+    public void updateTask(Activity activity) {
+        PhotoManager photoManager = PhotoManager.getInstance();
+        if (photoManager != null) {
+            photoManager.updatePhotoFileForTask(activity);
+            photoManager.removePhotoIfNecessary(activity);
+            mTask = photoManager.getTask();
+        }
         mViewModel.updateOrInsertTask(mTask);
     }
 
