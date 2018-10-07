@@ -2,41 +2,30 @@ package com.a_team.taskmanager.ui.singletask.managers;
 
 import android.app.Activity;
 
-import com.a_team.taskmanager.controller.TaskViewModel;
+import com.a_team.taskmanager.viewmodel.TaskViewModel;
 import com.a_team.taskmanager.entity.Task;
 
 public class TaskOperationsManager {
-    private static TaskOperationsManager ourInstance;
 
     private TaskViewModel mViewModel;
     private Task mTask;
+    private PhotoManager mPhotoManager;
 
-    public static TaskOperationsManager getInstance(TaskViewModel viewModel) {
-        if (ourInstance == null) {
-            ourInstance = new TaskOperationsManager(viewModel);
-        }
-        return ourInstance;
-    }
-
-    private TaskOperationsManager(TaskViewModel viewModel) {
+    public TaskOperationsManager(TaskViewModel viewModel, Task task, PhotoManager photoManager) {
         mViewModel = viewModel;
+        mTask = task;
+        mPhotoManager = photoManager;
     }
 
     public void updateTask(Activity activity) {
-        PhotoManager photoManager = PhotoManager.getInstance();
-        if (photoManager != null) {
-            photoManager.updatePhotoFileForTask(activity);
-            photoManager.removePhotoIfNecessary(activity);
-            mTask = photoManager.getTask();
+        if (mPhotoManager != null) {
+            mPhotoManager.updatePhotoFileForTask(activity);
+            mPhotoManager.removePhotoIfNecessary(activity);
         }
         mViewModel.updateOrInsertTask(mTask);
     }
 
     public void deleteTask() {
         mViewModel.deleteTask(mTask);
-    }
-
-    public void setTask(Task task) {
-        mTask = task;
     }
 }

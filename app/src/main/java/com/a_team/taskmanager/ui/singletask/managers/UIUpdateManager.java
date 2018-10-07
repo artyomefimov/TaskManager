@@ -6,19 +6,10 @@ import android.widget.TextView;
 import com.a_team.taskmanager.entity.Task;
 
 public class UIUpdateManager {
-    private static UIUpdateManager ourInstance;
-
-    public static UIUpdateManager getInstance() {
-        if (ourInstance == null) {
-            ourInstance = new UIUpdateManager();
-        }
-        return ourInstance;
+    UIUpdateManager() {
     }
 
-    private UIUpdateManager() {
-    }
-
-    public void updateUI(Task task, EditText titleField, EditText descriptionField, TextView notificationTextView) {
+    void updateUI(Task task, EditText titleField, EditText descriptionField, TextView notificationTextView) {
         if (task != null) {
             titleField.setText(task.getTitle());
             descriptionField.setText(task.getDescription());

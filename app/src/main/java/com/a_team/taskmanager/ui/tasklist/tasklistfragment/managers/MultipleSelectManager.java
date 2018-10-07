@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.a_team.taskmanager.R;
+import com.a_team.taskmanager.utils.FilenameGenerator;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
@@ -72,6 +73,7 @@ public class MultipleSelectManager {
 
     public void performClick(SelectableHolder holder, TaskListFragment fragment, Task task, int position) {
         if (!mMultiSelector.tapSelection(holder)) {
+            PhotoNameContainer.getInstance().putName(task.getId(), FilenameGenerator.getTempName());
             Intent intent = SingleTaskActivity.newIntent(fragment.getActivity(), task);
             fragment.startActivityForResult(intent, REQUEST_CODE);
         } else {

@@ -1,12 +1,11 @@
-package com.a_team.taskmanager.controller.utils;
+package com.a_team.taskmanager.utils;
+
+import android.support.annotation.NonNull;
 
 import java.util.UUID;
 
 public class FilenameGenerator {
-    public static UUID getUUID() {
-        return UUID.randomUUID();
-    }
-
+    @NonNull
     public static String getTempName() {
         return new StringBuilder(UUID.randomUUID().toString())
                 .append(".jpg")

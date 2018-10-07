@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.controller;
+package com.a_team.taskmanager.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.controller.repository.TaskManagerRepository;
+import com.a_team.taskmanager.repository.TaskManagerRepository;
 
 import java.io.File;
 import java.util.concurrent.Executor;
@@ -23,7 +23,7 @@ public class TaskViewModel extends AndroidViewModel {
 
     private Executor mExecutor;
 
-    public TaskViewModel(@NonNull Application application, TaskManagerRepository repository) {
+    private TaskViewModel(@NonNull Application application, TaskManagerRepository repository) {
         super(application);
         mRepository = repository;
         mLiveDataTask = new MutableLiveData<>();
@@ -39,7 +39,7 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public File getPhotoFile(String fileName) {
-        return mRepository.getPhotoFile(fileName);
+        return fileName != null ? mRepository.getPhotoFile(fileName) : null;
     }
 
     public void removePhotoFile(Uri uri) {
@@ -60,10 +60,10 @@ public class TaskViewModel extends AndroidViewModel {
             mRepository = ((BasicApp) application).getRepository();
         }
 
+        @SuppressWarnings("noinspection unchecked")
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            //noinspection unchecked
             return (T) new TaskViewModel(mApplication, mRepository);
         }
     }

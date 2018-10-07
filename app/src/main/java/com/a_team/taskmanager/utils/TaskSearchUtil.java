@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.controller.utils;
+package com.a_team.taskmanager.utils;
 
 import com.a_team.taskmanager.entity.Task;
 

@@ -1,23 +1,14 @@
-package com.a_team.taskmanager.controller.repository;
+package com.a_team.taskmanager.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
-import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.v4.content.FileProvider;
-
-import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.database.TaskManagerDatabase;
 import com.a_team.taskmanager.entity.Task;
 
 import java.io.File;
 import java.util.List;
-import java.util.logging.FileHandler;
 
 public class TaskManagerRepository {
     private static TaskManagerRepository mInstance;
@@ -58,14 +49,8 @@ public class TaskManagerRepository {
         if (isTaskWithCurrentIdExists(task.getId())) {
             mDatabase.taskDao().updateTasks(task);
         } else {
-            setTaskUuidIfNotSet(task);
             mDatabase.taskDao().insert(task);
         }
-    }
-
-    private void setTaskUuidIfNotSet(Task task) {
-        if (task.getFileUUID() == null)
-            task.setUUID();
     }
 
     private boolean isTaskWithCurrentIdExists(long taskId) {

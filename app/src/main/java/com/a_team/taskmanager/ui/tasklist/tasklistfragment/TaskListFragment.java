@@ -3,7 +3,6 @@ package com.a_team.taskmanager.ui.tasklist.tasklistfragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,9 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.controller.utils.PictureUtils;
+import com.a_team.taskmanager.utils.FilenameGenerator;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
+import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.PhotoNameContainer;
 import com.a_team.taskmanager.ui.tasklist.searchfragment.SearchFragment;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.MultipleSelectManager;
@@ -46,7 +46,7 @@ public class TaskListFragment extends Fragment {
     private static final String SEARCH_FRAGMENT = "searchFragment";
 
     private RecyclerView mRecyclerView;
-    private FloatingActionButton mFloatingActionButton;
+    private FloatingActionButton mNewTaskButton;
 
     private InitializationManager mInitializationManager;
     private MultipleSelectManager mMultipleSelectManager;
@@ -98,8 +98,8 @@ public class TaskListFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
         configureRecyclerView();
 
-        mFloatingActionButton = view.findViewById(R.id.fab);
-        configureFloatingActionButton();
+        mNewTaskButton = view.findViewById(R.id.fab);
+        configureNewTaskButton();
 
         return view;
     }
@@ -109,9 +109,12 @@ public class TaskListFragment extends Fragment {
         mRecyclerView.setAdapter(new TaskListAdapter(mTasks));
     }
 
-    private void configureFloatingActionButton() {
-        mFloatingActionButton.setOnClickListener(view -> {
-            Intent intent = SingleTaskActivity.newIntent(getActivity(), Task.emptyTask());
+    private void configureNewTaskButton() {
+        mNewTaskButton.setOnClickListener(view -> {
+            Task emptyTask = Task.emptyTask();
+            String tempPhotoName = FilenameGenerator.getTempName();
+            PhotoNameContainer.getInstance().putName(emptyTask.getId(), tempPhotoName);
+            Intent intent = SingleTaskActivity.newIntent(getActivity(), emptyTask);
             startActivityForResult(intent, REQUEST_CODE);
         });
     }
@@ -207,14 +210,6 @@ public class TaskListFragment extends Fragment {
             mTask = task;
             mTitle.setText(task.getTitle());
             mDescription.setText(task.getDescription());
-            if (hasPhoto(task)) {
-                Bitmap scaledBitmap = PictureUtils.getScaledBitmap(task.getPhotoFile().getPath(), getActivity());
-                mImage.setImageBitmap(scaledBitmap);
-            }
-        }
-
-        private boolean hasPhoto(Task task) {
-            return task.getPhotoFile() != null;
         }
 
         @Override

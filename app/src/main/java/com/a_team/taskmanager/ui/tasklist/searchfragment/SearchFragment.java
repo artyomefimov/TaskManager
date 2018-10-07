@@ -7,18 +7,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
+import com.a_team.taskmanager.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 
@@ -102,7 +100,7 @@ public class SearchFragment extends Fragment {
         private TextView mTitle;
         private TextView mDescription;
 
-        public SearchViewHolder(LayoutInflater inflater, ViewGroup parent) {
+        private SearchViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_task, parent, false));
 
             mTitle = itemView.findViewById(R.id.task_title);
@@ -111,7 +109,7 @@ public class SearchFragment extends Fragment {
             itemView.setOnClickListener(this);
         }
 
-        public void bind(Task task) {
+        private void bind(Task task) {
             mTask = task;
             mTitle.setText(task.getTitle());
             mDescription.setText(task.getDescription());
@@ -127,7 +125,7 @@ public class SearchFragment extends Fragment {
     private class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
         private List<Task> mTasks;
 
-        public SearchAdapter(List<Task> tasks) {
+        private SearchAdapter(List<Task> tasks) {
             mTasks = tasks;
         }
 

@@ -2,8 +2,8 @@ package com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers;
 
 import android.arch.lifecycle.ViewModelProviders;
 
-import com.a_team.taskmanager.controller.TaskListViewModel;
-import com.a_team.taskmanager.controller.utils.TaskSearchUtil;
+import com.a_team.taskmanager.viewmodel.TaskListViewModel;
+import com.a_team.taskmanager.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
 
@@ -16,6 +16,7 @@ public class InitializationManager {
     private List<Task> mTasks;
 
     private TaskSearchUtil mSearchUtil;
+    private PhotoNameContainer mNameContainer;
 
     public static InitializationManager getInstance() {
         return ourInstance;
@@ -23,6 +24,7 @@ public class InitializationManager {
 
     private InitializationManager() {
         mSearchUtil = TaskSearchUtil.getInstance();
+        mNameContainer = PhotoNameContainer.getInstance();
     }
 
     public void createViewModelAndSubscribeUI(TaskListFragment fragment) {
@@ -38,6 +40,9 @@ public class InitializationManager {
                 mTasks = tasks;
                 mSearchUtil.setStringTaskData(tasks);
                 fragment.updateRecyclerViewAdapter(mTasks);
+                for (Task task : tasks) {
+                    mNameContainer.putName(task.getId(), task.getFileUUID());
+                }
             }
         });
     }

@@ -2,16 +2,13 @@ package com.a_team.taskmanager.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.a_team.taskmanager.controller.utils.FilenameGenerator;
 import com.a_team.taskmanager.database.dao.DateConverter;
 
-import java.io.File;
 import java.util.Objects;
 
 @Entity(tableName = "Task")
@@ -32,9 +29,6 @@ public class Task implements Parcelable {
 
     @ColumnInfo(name = "Uuid")
     private String fileUUID;
-
-    @Ignore
-    private File photoFile;
 
     @Deprecated
     /**
@@ -86,24 +80,8 @@ public class Task implements Parcelable {
         this.fileUUID = fileUUID;
     }
 
-    public File getPhotoFile() {
-        return photoFile;
-    }
-
-    public void setPhotoFile(File photoFile) {
-        this.photoFile = photoFile;
-    }
-
-    public void setUUID() {
-        fileUUID = FilenameGenerator.getUUID().toString();
-    }
-
     public String getPhotoFilename() {
-        return fileUUID + ".jpg";
-    }
-
-    public void removePhotoFile() {
-        photoFile = null;
+        return fileUUID;
     }
 
     @Override

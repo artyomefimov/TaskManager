@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.controller.utils;
+package com.a_team.taskmanager.utils;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -10,7 +10,14 @@ import android.graphics.Point;
  */
 
 public class PictureUtils {
-    public static Bitmap getScaledBitmap(String path, int destWidth, int destHeight) {
+    public static Bitmap getScaledBitmap(String path, Activity activity) {
+        Point size = new Point();
+        activity.getWindowManager().getDefaultDisplay().getSize(size);
+
+        return getScaledBitmap(path, size.x, size.y);
+    }
+
+    private static Bitmap getScaledBitmap(String path, int destWidth, int destHeight) {
         // reading image size
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -33,12 +40,5 @@ public class PictureUtils {
         options.inSampleSize = inSampleSize;
 
         return BitmapFactory.decodeFile(path, options);
-    }
-
-    public static Bitmap getScaledBitmap(String path, Activity activity) {
-        Point size = new Point();
-        activity.getWindowManager().getDefaultDisplay().getSize(size);
-
-        return getScaledBitmap(path, size.x, size.y);
     }
 }
