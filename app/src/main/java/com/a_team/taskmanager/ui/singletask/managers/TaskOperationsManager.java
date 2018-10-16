@@ -19,7 +19,7 @@ public class TaskOperationsManager {
 
     public void updateTask(Activity activity) {
         if (mPhotoManager != null) {
-            mPhotoManager.updatePhotoFileForTask(activity);
+            mPhotoManager.updatePhotoFileForTask();
             mPhotoManager.removePhotoIfNecessary(activity);
         }
         mViewModel.updateOrInsertTask(mTask);

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -19,6 +20,7 @@ import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.PhotoNameContainer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import static com.a_team.taskmanager.ui.singletask.Constants.FILE_PROVIDER;
 import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
 
 public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
+    private static final String TAG = "PhotoManager";
 
     private TaskViewModel mViewModel;
     private Task mTask;
@@ -129,12 +132,11 @@ public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
         }
     }
 
-    void updatePhotoFileForTask(Activity activity) {
+    void updatePhotoFileForTask() {
         if (mTempPhotoFile.exists()) {
             mTask.setFileUUID(mTempPhotoFileName);
             if (mPhotoFile != null && !mTempPhotoFile.equals(mPhotoFile)) {
-                Uri fileUri = FileProvider.getUriForFile(activity, FILE_PROVIDER, mPhotoFile);
-                mViewModel.removePhotoFile(fileUri);
+                mPhotoFile.delete();
             }
         }
     }
@@ -146,6 +148,8 @@ public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
     public boolean isTaskHasNoPhoto() {
         return mIsHasNoPhoto;
     }
+
+    File getTempPhotoFile() {return mTempPhotoFile;}
 
     @Override
     public void onDataChanged(boolean isChanged) {
