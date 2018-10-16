@@ -76,6 +76,7 @@ public class Task implements Parcelable {
         return fileUUID;
     }
 
+
     public void setFileUUID(String fileUUID) {
         this.fileUUID = fileUUID;
     }
