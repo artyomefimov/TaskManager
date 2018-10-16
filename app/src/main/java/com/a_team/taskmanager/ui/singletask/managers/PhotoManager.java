@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,34 +16,25 @@ import com.a_team.taskmanager.viewmodel.TaskViewModel;
 import com.a_team.taskmanager.utils.PictureUtils;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.PhotoNameContainer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static com.a_team.taskmanager.ui.singletask.Constants.FILE_PROVIDER;
 import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
 
-public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
-    private static final String TAG = "PhotoManager";
-
+public class PhotoManager {
     private TaskViewModel mViewModel;
     private Task mTask;
 
     private File mPhotoFile;
-    private File mTempPhotoFile;
 
     private boolean mIsShouldDeletePhoto;
     private boolean mIsHasNoPhoto;
 
-    private String mTempPhotoFileName;
-
     public PhotoManager(TaskViewModel viewModel, Task task) {
         mViewModel = viewModel;
         mTask = task;
-        mTempPhotoFileName = PhotoNameContainer.getInstance().getName(mTask.getId());
     }
 
     public void configurePhotoButton(Fragment fragment, View photoButton) {
@@ -55,7 +45,7 @@ public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
         boolean canTakePhoto = makePhotoIntent.resolveActivity(packageManager) != null;
         if (canTakePhoto) {
             photoButton.setOnClickListener((view) -> {
-                Uri uri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, mTempPhotoFile);
+                Uri uri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, mPhotoFile);
                 makePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
                 List<ResolveInfo> cameraActivities = packageManager
@@ -72,20 +62,19 @@ public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
 
     public void setPhotoFile(TaskViewModel viewModel) {
         mPhotoFile = viewModel.getPhotoFile(mTask.getPhotoFilename());
-        mTempPhotoFile = viewModel.getPhotoFile(mTempPhotoFileName);
     }
 
     public void updatePhotoView(Activity activity, ImageView imageView) {
         if (isPhotoFileNotExists(mPhotoFile))
             mIsHasNoPhoto = true;
-        tempUpdatePhotoView(activity, imageView, mPhotoFile);
+        updatePhotoView(activity, imageView, mPhotoFile);
     }
 
     private boolean isPhotoFileNotExists(File photoFile) {
         return photoFile == null || !photoFile.exists();
     }
 
-    private void tempUpdatePhotoView(Activity activity, ImageView imageView, File photoFile) {
+    private void updatePhotoView(Activity activity, ImageView imageView, File photoFile) {
         if (isPhotoFileNotExists(photoFile)) {
             imageView.setImageBitmap(null);
         } else {
@@ -95,21 +84,16 @@ public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
     }
 
     public void getPhotoFromCamera(AbstractTaskFragment fragment, ImageView imageView) {
-        Uri uri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, mTempPhotoFile);
+        Uri uri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, mPhotoFile);
         fragment.getActivity().revokeUriPermission(uri,
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        tempUpdatePhotoView(fragment.getActivity(), imageView, mTempPhotoFile);
+        updatePhotoView(fragment.getActivity(), imageView, mPhotoFile);
         fragment.getCallback().onDataChanged(true);
     }
 
     void removePhotoIfNecessary(Activity activity) {
-        if (mIsShouldDeletePhoto) {
-            if (mTempPhotoFile.exists()) {
-                removePhoto(activity, mTempPhotoFile);
-            } else {
-                removePhoto(activity, mPhotoFile);
-            }
-        }
+        if (mIsShouldDeletePhoto)
+            removePhoto(activity, mPhotoFile);
     }
 
     public void markPhotoForDelete(AbstractTaskFragment fragment, ImageView imageView) {
@@ -125,38 +109,11 @@ public class PhotoManager implements AbstractTaskFragment.OnChangedCallback {
         }
     }
 
-    public void removeTempPhoto(Activity activity) {
-        if (mTempPhotoFile != null) {
-            Uri fileUri = FileProvider.getUriForFile(activity, FILE_PROVIDER, mTempPhotoFile);
-            mViewModel.removePhotoFile(fileUri);
-        }
-    }
-
-    void updatePhotoFileForTask() {
-        if (mTempPhotoFile.exists()) {
-            mTask.setFileUUID(mTempPhotoFileName);
-            if (mPhotoFile != null && !mTempPhotoFile.equals(mPhotoFile)) {
-                mPhotoFile.delete();
-            }
-        }
-    }
-
     public File getPhotoFile() {
         return mPhotoFile;
     }
 
     public boolean isTaskHasNoPhoto() {
         return mIsHasNoPhoto;
-    }
-
-    File getTempPhotoFile() {return mTempPhotoFile;}
-
-    @Override
-    public void onDataChanged(boolean isChanged) {
-    }
-
-    @Override
-    public void taskChanged(Task task) {
-        mTask = task;
     }
 }

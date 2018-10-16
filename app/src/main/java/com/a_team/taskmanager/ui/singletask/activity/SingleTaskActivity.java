@@ -9,13 +9,13 @@ import android.support.v4.app.Fragment;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.FragmentActivity;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
-import com.a_team.taskmanager.ui.singletask.ConfirmationDialog;
+import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
 
 import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
 
 public class SingleTaskActivity extends FragmentActivity implements AbstractTaskFragment.OnChangedCallback {
-
     private boolean isDataChanged;
+    private boolean isNotNewTask;
 
     @NonNull
     public static Intent newIntent(Context context, Task task) {
@@ -36,30 +36,23 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
 
     @Override
     public boolean onSupportNavigateUp() {
-        showConfirmOrFinish();
+        saveIfNecessary();
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        showConfirmOrFinish();
+        saveIfNecessary();
     }
 
     @Override
-    public void onDataChanged(boolean isDataChanged) {
-        this.isDataChanged = isDataChanged;
+    public void onDataChanged(boolean isChanged) {
+        isDataChanged = isChanged;
     }
 
-    @Override
-    public void taskChanged(Task task) {
-
-    }
-
-    private void showConfirmOrFinish() {
-        if (isDataChanged) {
-            new ConfirmationDialog(this).showDialog();
-        } else {
-            finish();
-        }
+    private void saveIfNecessary() {
+        if (isDataChanged)
+            TaskOperationsManagerKeeper.getInstance().getTaskOperationsManager().updateTask(this);
+        finish();
     }
 }

@@ -5,9 +5,9 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.entity.Task;
 
-public class UIUpdateManager {
-    UIUpdateManager() {
-    }
+class UIUpdateManager {
+
+    UIUpdateManager() { }
 
     void updateUI(Task task, EditText titleField, EditText descriptionField, TextView notificationTextView) {
         if (task != null) {

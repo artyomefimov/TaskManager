@@ -41,7 +41,7 @@ public class InitializationManager {
                 mSearchUtil.setStringTaskData(tasks);
                 fragment.updateRecyclerViewAdapter(mTasks);
                 for (Task task : tasks) {
-                    mNameContainer.putName(task.getId(), task.getFileUUID());
+                    mNameContainer.putName(task.getId(), task.getPhotoFilename());
                 }
             }
         });

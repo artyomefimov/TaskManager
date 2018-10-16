@@ -22,5 +22,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <string name="save_changes">Don\'t forget to save changes!</string>
+    <string name="saving_changes">Saving changes…</string>
+    <string name="deleting_task">Deleting task…</string>
 </resources>

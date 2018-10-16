@@ -23,6 +23,7 @@ import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
+import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
 
 import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
 import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
@@ -54,7 +55,8 @@ public abstract class AbstractTaskFragment extends Fragment {
         args.putParcelable(ARG_CURRENT_TASK, task);
 
         AbstractTaskFragment fragment;
-        fragment = task.equals(Task.emptyTask()) ? new NewTaskFragment() : new TaskEditFragment();
+        boolean isEmptyTask = task.equals(Task.emptyTask());
+        fragment = isEmptyTask ? new NewTaskFragment() : new TaskEditFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -91,13 +93,12 @@ public abstract class AbstractTaskFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        receiveArgsFromBundle();
         initManagers();
         configureButtons();
         performPhotoUpdating();
     }
 
-    private void receiveArgsFromBundle() {
+    protected void receiveArgsFromBundle() {
         mTask = getArguments().getParcelable(ARG_CURRENT_TASK);
     }
 
@@ -106,6 +107,7 @@ public abstract class AbstractTaskFragment extends Fragment {
         mInitializationManager.initViewModel(this);
         mPhotoManager = new PhotoManager(mInitializationManager.getViewModel(), mTask);
         mTaskOperationsManager = new TaskOperationsManager(mInitializationManager.getViewModel(), mTask, mPhotoManager);
+        TaskOperationsManagerKeeper.getInstance().setTaskOperationsManager(mTaskOperationsManager);
     }
 
     private void configureButtons() {
@@ -136,7 +138,6 @@ public abstract class AbstractTaskFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mTask.setTitle(s.toString());
                 mCallback.onDataChanged(true);
-                mCallback.taskChanged(mTask);
             }
 
             @Override
@@ -156,7 +157,6 @@ public abstract class AbstractTaskFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mTask.setDescription(s.toString());
                 mCallback.onDataChanged(true);
-                mCallback.taskChanged(mTask);
             }
 
             @Override
@@ -210,7 +210,7 @@ public abstract class AbstractTaskFragment extends Fragment {
         getActivity().finish();
     }
 
-    private void performPhotoUpdating() {
+    protected void performPhotoUpdating() {
         mPhotoManager.setPhotoFile(mInitializationManager.getViewModel());
         mPhotoManager.updatePhotoView(getActivity(), mPhoto);
     }
@@ -221,7 +221,7 @@ public abstract class AbstractTaskFragment extends Fragment {
     }
 
     protected void performDelete() {
-        mTaskOperationsManager.deleteTask();
+        mTaskOperationsManager.deleteTask(getActivity());
         finishActivity();
     }
 
@@ -243,7 +243,6 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     public interface OnChangedCallback {
         void onDataChanged(boolean isChanged);
-        void taskChanged(Task task);
     }
 
     @Override
@@ -256,8 +255,5 @@ public abstract class AbstractTaskFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mCallback = null;
-        if (mPhotoManager.isTaskHasNoPhoto()) {
-            mPhotoManager.removeTempPhoto(getActivity());
-        }
     }
 }

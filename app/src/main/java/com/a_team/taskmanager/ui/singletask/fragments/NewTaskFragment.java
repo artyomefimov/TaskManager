@@ -1,12 +1,25 @@
 package com.a_team.taskmanager.ui.singletask.fragments;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.a_team.taskmanager.R;
+import com.a_team.taskmanager.utils.FilenameGenerator;
 
 public class NewTaskFragment extends AbstractTaskFragment {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        receiveArgsFromBundle();
+        setUniqueNameForPhotoFile();
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    private void setUniqueNameForPhotoFile() {
+        mTask.setFileUUID(FilenameGenerator.getTempName());
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
