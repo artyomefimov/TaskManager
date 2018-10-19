@@ -21,9 +21,13 @@ import android.widget.TextView;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
+import com.a_team.taskmanager.ui.singletask.managers.notifications.NotificationManager;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
+import com.a_team.taskmanager.utils.DateTimeKeeper;
+import com.a_team.taskmanager.utils.ToastMaker;
+import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
 
 import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
 import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
@@ -120,7 +124,16 @@ public abstract class AbstractTaskFragment extends Fragment {
     }
 
     private void configureSetNotificationButton() {
-        // adding a notification for the specific time in future
+        mSetNotificationButton.setOnClickListener((view) -> {
+            NotificationManager notificationManager = new NotificationManager();
+            notificationManager.showDateTimePicker(this);
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ToastMaker.show(getActivity(), DateTimeKeeper.getInstance().getPickedDateTime(), ToastPeriod.Long);
     }
 
     private void configureNotificationTimestampButton() {

@@ -2,10 +2,10 @@ package com.a_team.taskmanager.ui.singletask.managers;
 
 import com.a_team.taskmanager.entity.Task;
 
-public class FillingTitleHelper {
+class FillingTitleHelper {
     private static final String ONLY_PHOTO = "Photo task";
 
-    public static void fillTitleIfEmpty(Task task) {
+    static void fillTitleIfEmpty(Task task) {
         if (isNotHaveTitle(task)) {
             if (isHaveDescription(task)) {
                 task.setTitle(task.getDescription());

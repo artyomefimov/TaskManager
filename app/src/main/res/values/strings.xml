@@ -12,7 +12,9 @@
     <string name="no_results">No results</string>
 
     <string name="task_image">Photo of the task</string>
+
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <string name="remove">Remove</string>
     
@@ -24,4 +26,7 @@
 
     <string name="saving_changes">Saving changes…</string>
     <string name="deleting_task">Deleting task…</string>
+
+    <string name="notification_date_time">Notification date&amp;time</string>
+    <string name="invalid_date_time">You can only set notification to the time in the future!</string>
 </resources>
