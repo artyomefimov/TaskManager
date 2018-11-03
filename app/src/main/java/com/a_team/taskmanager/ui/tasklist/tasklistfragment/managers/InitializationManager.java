@@ -16,7 +16,6 @@ public class InitializationManager {
     private List<Task> mTasks;
 
     private TaskSearchUtil mSearchUtil;
-    private PhotoNameContainer mNameContainer;
 
     public static InitializationManager getInstance() {
         return ourInstance;
@@ -24,7 +23,6 @@ public class InitializationManager {
 
     private InitializationManager() {
         mSearchUtil = TaskSearchUtil.getInstance();
-        mNameContainer = PhotoNameContainer.getInstance();
     }
 
     public void createViewModelAndSubscribeUI(TaskListFragment fragment) {
@@ -40,9 +38,6 @@ public class InitializationManager {
                 mTasks = tasks;
                 mSearchUtil.setStringTaskData(tasks);
                 fragment.updateRecyclerViewAdapter(mTasks);
-                for (Task task : tasks) {
-                    mNameContainer.putName(task.getId(), task.getPhotoFilename());
-                }
             }
         });
     }

@@ -8,32 +8,31 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.a_team.taskmanager.database.dao.DateConverter;
+import com.a_team.taskmanager.utils.NullStringProcessor;
 
+import java.sql.Date;
 import java.util.Objects;
 
 @Entity(tableName = "Task")
-@TypeConverters({DateConverter.class})
 public class Task implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
     private long id;
 
-    @ColumnInfo(name = "Title")
+    @ColumnInfo(name = "title")
     private String title;
 
-    @ColumnInfo(name = "Description")
+    @ColumnInfo(name = "description")
     private String description;
 
-    @ColumnInfo(name = "Notification")
-    private String notificationDate;
+    @TypeConverters({DateConverter.class})
+    @ColumnInfo(name = "notification_date")
+    private Long notificationDate;
 
-    @ColumnInfo(name = "Uuid")
+    @ColumnInfo(name = "filename")
     private String fileUUID;
 
     @Deprecated
-    /**
-     * @deprecated use Task.emptyTask() instead
-     */
     public Task() {}
 
     public static Task emptyTask() {
@@ -64,11 +63,11 @@ public class Task implements Parcelable {
         this.title = title;
     }
 
-    public String getNotificationDate() {
+    public Long getNotificationDate() {
         return notificationDate;
     }
 
-    public void setNotificationDate(String notificationDate) {
+    public void setNotificationDate(Long notificationDate) {
         this.notificationDate = notificationDate;
     }
 
@@ -76,13 +75,23 @@ public class Task implements Parcelable {
         return fileUUID;
     }
 
-
     public void setFileUUID(String fileUUID) {
         this.fileUUID = fileUUID;
     }
 
     public String getPhotoFilename() {
         return fileUUID;
+    }
+
+    private void setNotificationDateFromString(String notificationDate) {
+        this.notificationDate = getLongFromString(notificationDate);
+    }
+
+    private Long getLongFromString(String in) {
+        if (in == null || in.isEmpty())
+            return null;
+        else
+            return Long.parseLong(in);
     }
 
     @Override
@@ -95,7 +104,7 @@ public class Task implements Parcelable {
         dest.writeLong(id);
         dest.writeString(title);
         dest.writeString(description);
-        dest.writeString(notificationDate);
+        dest.writeString(NullStringProcessor.valueOf(notificationDate));
         dest.writeString(fileUUID);
     }
 
@@ -106,7 +115,7 @@ public class Task implements Parcelable {
             task.setId(source.readLong());
             task.setTitle(source.readString());
             task.setDescription(source.readString());
-            task.setNotificationDate(source.readString());
+            task.setNotificationDateFromString(source.readString());
             task.setFileUUID(source.readString());
             return task;
         }
@@ -123,6 +132,8 @@ public class Task implements Parcelable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
+                ", notificationDate=" + notificationDate +
+                ", fileUUID='" + fileUUID + '\'' +
                 '}';
     }
 
@@ -134,11 +145,12 @@ public class Task implements Parcelable {
         return id == task.id &&
                 Objects.equals(title, task.title) &&
                 Objects.equals(description, task.description) &&
-                Objects.equals(notificationDate, task.notificationDate);
+                Objects.equals(notificationDate, task.notificationDate) &&
+                Objects.equals(fileUUID, task.fileUUID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, notificationDate);
+        return Objects.hash(id, title, description, notificationDate, fileUUID);
     }
 }

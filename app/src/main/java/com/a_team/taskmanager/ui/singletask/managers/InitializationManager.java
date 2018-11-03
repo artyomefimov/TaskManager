@@ -2,11 +2,10 @@ package com.a_team.taskmanager.ui.singletask.managers;
 
 import android.arch.lifecycle.ViewModelProviders;
 
-import com.a_team.taskmanager.viewmodel.TaskViewModel;
+import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
-
-import static com.a_team.taskmanager.ui.singletask.Constants.CREATE_TASK_TITLE;
+import com.a_team.taskmanager.viewmodel.TaskViewModel;
 
 public class InitializationManager {
     private TaskViewModel mViewModel;
@@ -25,7 +24,8 @@ public class InitializationManager {
             ActionBarTitleManager.setActionBarTitle(fragment.getActivity(), mTask.getTitle());
         } else {
             createViewModel(fragment);
-            ActionBarTitleManager.setActionBarTitle(fragment.getActivity(), CREATE_TASK_TITLE);
+            ActionBarTitleManager.setActionBarTitle(fragment.getActivity(),
+                    fragment.getString(R.string.new_task_fragment_action_bar_title));
         }
     }
 
@@ -38,7 +38,7 @@ public class InitializationManager {
                 fragment.getActivity().getApplication());
         mViewModel = ViewModelProviders.of(fragment, factory).get(TaskViewModel.class);
         subscribeUi(fragment);
-        mUIUpdateManager.updateUI(mTask, fragment.getTitleField(), fragment.getDescriptionField(), fragment.getNotificationTimestamp());
+        mUIUpdateManager.updateTitleAndDescription(mTask, fragment.getTitleField(), fragment.getDescriptionField());
     }
 
     private void createViewModel(AbstractTaskFragment fragment) {
@@ -49,7 +49,7 @@ public class InitializationManager {
 
     private void subscribeUi(AbstractTaskFragment fragment) {
         mViewModel.getTask().observe(fragment, task ->
-                mUIUpdateManager.updateUI(mTask, fragment.getTitleField(), fragment.getDescriptionField(), fragment.getNotificationTimestamp()));
+                mUIUpdateManager.updateTitleAndDescription(mTask, fragment.getTitleField(), fragment.getDescriptionField()));
     }
 
     public TaskViewModel getViewModel() {

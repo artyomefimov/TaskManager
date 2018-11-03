@@ -20,27 +20,29 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.notification.NotificationManager;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
-import com.a_team.taskmanager.ui.singletask.managers.notifications.NotificationManager;
+import com.a_team.taskmanager.ui.singletask.managers.UIUpdateManager;
+import com.a_team.taskmanager.ui.singletask.managers.notifications.NotificationDateTimePicker;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
-import com.a_team.taskmanager.utils.DateTimeKeeper;
-import com.a_team.taskmanager.utils.ToastMaker;
-import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
+import com.a_team.taskmanager.utils.DateFormatter;
+
+import java.util.Date;
 
 import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
+import static com.a_team.taskmanager.ui.singletask.Constants.ARG_DESCRIPTION;
+import static com.a_team.taskmanager.ui.singletask.Constants.ARG_TIMESTAMP;
+import static com.a_team.taskmanager.ui.singletask.Constants.ARG_TITLE;
+import static com.a_team.taskmanager.ui.singletask.Constants.DIALOG_IMAGE;
 import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
+import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_REAL_PHOTO;
 
-public abstract class AbstractTaskFragment extends Fragment {
-    private static final String ARG_TITLE = "title";
-    private static final String ARG_DESCRIPTION = "description";
-    private static final String ARG_TIMESTAMP = "timestamp";
-    private static final int REQUEST_REAL_PHOTO = 3;
-    private static final String DIALOG_IMAGE = "DialogImage";
-
+public abstract class AbstractTaskFragment extends Fragment implements NotificationDateTimePicker.OnChangedNotificationDateCallback{
     protected FloatingActionButton mMakePhotoButton;
     protected FloatingActionButton mSetNotificationButton;
+    protected FloatingActionButton mDeleteNotificationButton;
     protected TextView mNotificationTimestamp;
     protected EditText mTitleField;
     protected EditText mDescriptionField;
@@ -75,7 +77,7 @@ public abstract class AbstractTaskFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(ARG_TITLE, mTitleField.getText().toString());
         outState.putString(ARG_DESCRIPTION, mDescriptionField.getText().toString());
-        //outState.putString(ARG_TIMESTAMP, mNotificationTimestamp.getText().toString());
+        outState.putString(ARG_TIMESTAMP, mNotificationTimestamp.getText().toString());
         super.onSaveInstanceState(outState);
     }
 
@@ -86,7 +88,8 @@ public abstract class AbstractTaskFragment extends Fragment {
 
         mMakePhotoButton = view.findViewById(R.id.task_edit_make_photo);
         mSetNotificationButton = view.findViewById(R.id.task_edit_add_notification);
-//      mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
+        mDeleteNotificationButton = view.findViewById(R.id.task_edit_delete_notification);
+        mNotificationTimestamp = view.findViewById(R.id.task_edit_notification_timestamp);
         mTitleField = view.findViewById(R.id.task_edit_title);
         mDescriptionField = view.findViewById(R.id.task_edit_description);
         mPhoto = view.findViewById(R.id.task_edit_photo);
@@ -116,7 +119,8 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     private void configureButtons() {
         configureSetNotificationButton();
-        //configureNotificationTimestampButton();
+        configureDeleteNotificationButton();
+        configureNotificationTimestampButton();
         configureTitleField();
         configureDescriptionField();
         configureMakePhotoButton();
@@ -125,19 +129,22 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     private void configureSetNotificationButton() {
         mSetNotificationButton.setOnClickListener((view) -> {
-            NotificationManager notificationManager = new NotificationManager();
-            notificationManager.showDateTimePicker(this);
+            NotificationDateTimePicker notificationDateTimePicker = new NotificationDateTimePicker(this);
+            notificationDateTimePicker.showDateTimePicker(this);
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        ToastMaker.show(getActivity(), DateTimeKeeper.getInstance().getPickedDateTime(), ToastPeriod.Long);
+    private void configureDeleteNotificationButton() {
+        mDeleteNotificationButton.setOnClickListener((view) -> {
+            mTask.setNotificationDate(null);
+            new NotificationManager().removeNotification();
+            UIUpdateManager.removeNotificationText(mNotificationTimestamp);
+            mCallback.onDataChanged(true);
+        });
     }
 
     private void configureNotificationTimestampButton() {
-        mNotificationTimestamp.setText("No notification yet");
+        UIUpdateManager.setNotificationText(mNotificationTimestamp, mTask.getNotificationDate());
     }
 
     private void configureTitleField() {
@@ -238,10 +245,6 @@ public abstract class AbstractTaskFragment extends Fragment {
         finishActivity();
     }
 
-    public TextView getNotificationTimestamp() {
-        return mNotificationTimestamp;
-    }
-
     public EditText getTitleField() {
         return mTitleField;
     }
@@ -252,6 +255,13 @@ public abstract class AbstractTaskFragment extends Fragment {
 
     public OnChangedCallback getCallback() {
         return mCallback;
+    }
+
+    @Override
+    public void onNotificationDateChanged(Date newDate) {
+        mTask.setNotificationDate(newDate.getTime());
+        UIUpdateManager.setNotificationText(mNotificationTimestamp, mTask.getNotificationDate());
+        mCallback.onDataChanged(true);
     }
 
     public interface OnChangedCallback {

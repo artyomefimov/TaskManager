@@ -15,7 +15,6 @@ import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
 
 public class SingleTaskActivity extends FragmentActivity implements AbstractTaskFragment.OnChangedCallback {
     private boolean isDataChanged;
-    private boolean isNotNewTask;
 
     @NonNull
     public static Intent newIntent(Context context, Task task) {

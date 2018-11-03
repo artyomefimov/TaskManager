@@ -73,7 +73,6 @@ public class MultipleSelectManager {
 
     public void performClick(SelectableHolder holder, TaskListFragment fragment, Task task, int position) {
         if (!mMultiSelector.tapSelection(holder)) {
-            PhotoNameContainer.getInstance().putName(task.getId(), FilenameGenerator.getTempName());
             Intent intent = SingleTaskActivity.newIntent(fragment.getActivity(), task);
             fragment.startActivityForResult(intent, REQUEST_CODE);
         } else {

@@ -26,10 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.utils.FilenameGenerator;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.PhotoNameContainer;
 import com.a_team.taskmanager.ui.tasklist.searchfragment.SearchFragment;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.MultipleSelectManager;
@@ -112,8 +110,6 @@ public class TaskListFragment extends Fragment {
     private void configureNewTaskButton() {
         mNewTaskButton.setOnClickListener(view -> {
             Task emptyTask = Task.emptyTask();
-            String tempPhotoName = FilenameGenerator.getTempName();
-            PhotoNameContainer.getInstance().putName(emptyTask.getId(), tempPhotoName);
             Intent intent = SingleTaskActivity.newIntent(getActivity(), emptyTask);
             startActivityForResult(intent, REQUEST_CODE);
         });

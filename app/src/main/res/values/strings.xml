@@ -29,4 +29,6 @@
 
     <string name="notification_date_time">Notification date&amp;time</string>
     <string name="invalid_date_time">You can only set notification to the time in the future!</string>
+
+    <string name="new_task_fragment_action_bar_title">Create task</string>
 </resources>

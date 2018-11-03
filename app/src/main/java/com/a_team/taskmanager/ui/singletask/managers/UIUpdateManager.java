@@ -4,16 +4,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.utils.DateFormatter;
 
-class UIUpdateManager {
+public class UIUpdateManager {
 
     UIUpdateManager() { }
 
-    void updateUI(Task task, EditText titleField, EditText descriptionField, TextView notificationTextView) {
+    void updateTitleAndDescription(Task task, EditText titleField, EditText descriptionField) {
         if (task != null) {
             titleField.setText(task.getTitle());
             descriptionField.setText(task.getDescription());
-            //mNotificationTimestamp.setText(task.getNotificationDate().toString()); // todo add notification feature
         }
+    }
+
+    public static void setNotificationText(TextView notificationTextView, Long notificationDate) {
+        String formattedDate = DateFormatter.formatToString(notificationDate);
+        notificationTextView.setText(formattedDate);
+    }
+
+    public static void removeNotificationText(TextView notificationTextView) {
+        notificationTextView.setText("");
     }
 }

@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.utils.DateTimeKeeper;
+import com.a_team.taskmanager.notification.NotificationManager;
 import com.a_team.taskmanager.utils.ToastMaker;
 import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
@@ -18,19 +18,19 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class NotificationManager {
+public class NotificationDateTimePicker {
     private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";
-    private static final String TAG = "NotificationManager";
+    private static final String TAG = "NotificationPicker";
 
     private SwitchDateTimeDialogFragment mDateTimeDialogFragment;
-    private SimpleDateFormat mDateFormat;
     private Calendar mCalendar;
+    private OnChangedNotificationDateCallback mCallback;
 
-    public NotificationManager() {
-        mDateFormat = new SimpleDateFormat("EEE, MMM d, y, H:mm", java.util.Locale.getDefault());
+    public NotificationDateTimePicker(OnChangedNotificationDateCallback callback) {
         Date current = new Date();
         mCalendar = Calendar.getInstance();
         mCalendar.setTime(current);
+        mCallback = callback;
     }
 
     public void showDateTimePicker(Fragment fragment) {
@@ -79,7 +79,9 @@ public class NotificationManager {
             public void onPositiveButtonClick(Date date) {
                 boolean isPickedTimeValid = NotificationDateTimeController.isValidDateTime(mCalendar.getTime(), date);
                 if (isPickedTimeValid) {
-                    DateTimeKeeper.getInstance().setPickedDateTime(mDateFormat.format(date));
+                    mCallback.onNotificationDateChanged(date);
+                    new NotificationManager().addNotification();
+                    mDateTimeDialogFragment.dismiss();
                 } else {
                     ToastMaker.show(context, R.string.invalid_date_time, ToastPeriod.Long);
                 }
@@ -87,6 +89,7 @@ public class NotificationManager {
 
             @Override
             public void onNegativeButtonClick(Date date) {
+                mDateTimeDialogFragment.dismiss();
             }
         });
     }
@@ -110,5 +113,9 @@ public class NotificationManager {
         mDateTimeDialogFragment.setDefaultDateTime(
                 new GregorianCalendar(currentYear, currentMonth, nextDay, currentHour, currentMinute)
                         .getTime());
+    }
+
+    public interface OnChangedNotificationDateCallback {
+        void onNotificationDateChanged(Date newDate);
     }
 }

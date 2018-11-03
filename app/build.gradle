@@ -70,6 +70,9 @@ dependencies {
 
     // Date-time picker
     implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.0'
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
 }
 repositories {
     mavenCentral()
