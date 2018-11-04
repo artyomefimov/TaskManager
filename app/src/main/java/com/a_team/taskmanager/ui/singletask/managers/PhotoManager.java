@@ -20,8 +20,8 @@ import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
 import java.io.File;
 import java.util.List;
 
-import static com.a_team.taskmanager.ui.singletask.Constants.FILE_PROVIDER;
-import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.FILE_PROVIDER;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_PHOTO;
 
 public class PhotoManager {
     private TaskViewModel mViewModel;

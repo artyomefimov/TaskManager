@@ -3,9 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.a_team.taskmanager">
 
+    <permission android:name="com.a_team.taskmanager.PRIVATE"
+        android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="27" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.a_team.taskmanager.PRIVATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name=".BasicApp"
@@ -39,15 +44,21 @@
                 android:resource="@xml/files" />
         </provider>
 
-        <service android:name=".notification.NotificationService"/>
+        <service android:name=".alarm.AlarmService"/>
 
-        <receiver android:name=".notification.StartupReceiver">
+        <receiver android:name=".alarm.receivers.StartupReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
-
+        <receiver android:name=".alarm.receivers.NotificationReceiver"
+            android:exported="false">
+            <intent-filter
+                android:priority="999">
+                <action android:name="com.a_team.taskmanager.notification.AlarmService"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

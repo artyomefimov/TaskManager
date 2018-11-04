@@ -20,26 +20,25 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.notification.NotificationManager;
+import com.a_team.taskmanager.alarm.AlarmManager;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
-import com.a_team.taskmanager.ui.singletask.managers.UIUpdateManager;
-import com.a_team.taskmanager.ui.singletask.managers.notifications.NotificationDateTimePicker;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
-import com.a_team.taskmanager.utils.DateFormatter;
+import com.a_team.taskmanager.ui.singletask.managers.UIUpdateManager;
+import com.a_team.taskmanager.ui.singletask.managers.alarms.AlarmDateTimePicker;
 
 import java.util.Date;
 
-import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
-import static com.a_team.taskmanager.ui.singletask.Constants.ARG_DESCRIPTION;
-import static com.a_team.taskmanager.ui.singletask.Constants.ARG_TIMESTAMP;
-import static com.a_team.taskmanager.ui.singletask.Constants.ARG_TITLE;
-import static com.a_team.taskmanager.ui.singletask.Constants.DIALOG_IMAGE;
-import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_PHOTO;
-import static com.a_team.taskmanager.ui.singletask.Constants.REQUEST_REAL_PHOTO;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_CURRENT_TASK;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_DESCRIPTION;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_TIMESTAMP;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_TITLE;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.DIALOG_IMAGE;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_PHOTO;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_REAL_PHOTO;
 
-public abstract class AbstractTaskFragment extends Fragment implements NotificationDateTimePicker.OnChangedNotificationDateCallback{
+public abstract class AbstractTaskFragment extends Fragment implements AlarmDateTimePicker.OnChangedNotificationDateCallback{
     protected FloatingActionButton mMakePhotoButton;
     protected FloatingActionButton mSetNotificationButton;
     protected FloatingActionButton mDeleteNotificationButton;
@@ -129,16 +128,16 @@ public abstract class AbstractTaskFragment extends Fragment implements Notificat
 
     private void configureSetNotificationButton() {
         mSetNotificationButton.setOnClickListener((view) -> {
-            NotificationDateTimePicker notificationDateTimePicker = new NotificationDateTimePicker(this);
-            notificationDateTimePicker.showDateTimePicker(this);
+            AlarmDateTimePicker alarmDateTimePicker = new AlarmDateTimePicker(this);
+            alarmDateTimePicker.showDateTimePicker(this);
         });
     }
 
     private void configureDeleteNotificationButton() {
         mDeleteNotificationButton.setOnClickListener((view) -> {
             mTask.setNotificationDate(null);
-            new NotificationManager().removeNotification();
             UIUpdateManager.removeNotificationText(mNotificationTimestamp);
+            AlarmManager.removeNotification();
             mCallback.onDataChanged(true);
         });
     }
@@ -261,6 +260,7 @@ public abstract class AbstractTaskFragment extends Fragment implements Notificat
     public void onNotificationDateChanged(Date newDate) {
         mTask.setNotificationDate(newDate.getTime());
         UIUpdateManager.setNotificationText(mNotificationTimestamp, mTask.getNotificationDate());
+        AlarmManager.addNotification(getActivity(), mTask);
         mCallback.onDataChanged(true);
     }
 

@@ -11,7 +11,7 @@ import com.a_team.taskmanager.ui.FragmentActivity;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
 
-import static com.a_team.taskmanager.ui.singletask.Constants.ARG_CURRENT_TASK;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_CURRENT_TASK;
 
 public class SingleTaskActivity extends FragmentActivity implements AbstractTaskFragment.OnChangedCallback {
     private boolean isDataChanged;

@@ -27,8 +27,12 @@
     <string name="saving_changes">Saving changes…</string>
     <string name="deleting_task">Deleting task…</string>
 
-    <string name="notification_date_time">Notification date&amp;time</string>
+    <string name="alarm_date_time">Alarm date&amp;time</string>
     <string name="invalid_date_time">You can only set notification to the time in the future!</string>
 
     <string name="new_task_fragment_action_bar_title">Create task</string>
+    
+    <!--notification-->
+    
+    <string name="notification_ticker">Don\'t forget!</string>
 </resources>

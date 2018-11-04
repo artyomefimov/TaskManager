@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.notification;
+package com.a_team.taskmanager.alarm.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

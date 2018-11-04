@@ -8,7 +8,9 @@ class ActionBarTitleManager {
     static void setActionBarTitle(Activity activity, String title) {
         AppCompatActivity appCompatActivity = ((AppCompatActivity) activity);
         ActionBar actionBar = appCompatActivity.getSupportActionBar();
-        actionBar.setTitle(title);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }

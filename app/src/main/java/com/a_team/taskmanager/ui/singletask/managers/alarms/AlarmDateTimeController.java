@@ -1,8 +1,8 @@
-package com.a_team.taskmanager.ui.singletask.managers.notifications;
+package com.a_team.taskmanager.ui.singletask.managers.alarms;
 
 import java.util.Date;
 
-public class NotificationDateTimeController {
+public class AlarmDateTimeController {
     public static boolean isValidDateTime(Date currentTime, Date pickedTime) {
         if (currentTime == null || pickedTime == null)
             return false;

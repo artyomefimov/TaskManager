@@ -1,6 +1,6 @@
 package com.a_team.taskmanager.ui.singletask;
 
-public class Constants {
+public class SingleTaskConstants {
     public static final String FILE_PROVIDER = "com.artyom.taskmanager.fileprovider";
 
     public static final String ARG_CURRENT_TASK = "currentTask";
