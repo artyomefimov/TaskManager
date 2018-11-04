@@ -19,6 +19,7 @@ import static com.a_team.taskmanager.alarm.AlarmConstants.BUNDLE;
 import static com.a_team.taskmanager.alarm.AlarmConstants.NOTIFICATION;
 import static com.a_team.taskmanager.alarm.AlarmConstants.PERMISSION_PRIVATE;
 import static com.a_team.taskmanager.alarm.AlarmConstants.REQUEST;
+import static com.a_team.taskmanager.alarm.AlarmConstants.TASK_ID;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_CURRENT_TASK;
 
 public class AlarmService extends IntentService {
@@ -31,6 +32,7 @@ public class AlarmService extends IntentService {
         Bundle bundle = new Bundle();
         bundle.putParcelable(ARG_CURRENT_TASK, task);
         intent.putExtra(BUNDLE, bundle);
+        intent.putExtra(TASK_ID, task.getFileUUID());
         return intent;
     }
 
@@ -61,12 +63,25 @@ public class AlarmService extends IntentService {
     }
 
     public static void setAlarm(Context context, Task task) {
-        Intent whatToStart = AlarmService.newIntent(context, task);
-        PendingIntent pendingIntent = PendingIntent.getService(context, REQUEST_CODE, whatToStart, FLAGS);
+        PendingIntent pendingIntent = buildIntent(context, task);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, task.getNotificationDate(), pendingIntent);
         }
+    }
+
+    public static void removeAlarm(Context context, Task task) {
+        PendingIntent pendingIntent = buildIntent(context, task);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+
+    private static PendingIntent buildIntent(Context context, Task task) {
+        Intent whatToStart = AlarmService.newIntent(context, task);
+        return PendingIntent.getService(context, REQUEST_CODE, whatToStart, FLAGS);
     }
 }

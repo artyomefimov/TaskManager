@@ -9,7 +9,7 @@ public class AlarmManager {
         AlarmService.setAlarm(context, task);
     }
 
-    public static void removeNotification() {
-
+    public static void removeNotification(Context context, Task task) {
+        AlarmService.removeAlarm(context, task);
     }
 }

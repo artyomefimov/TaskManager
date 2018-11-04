@@ -9,8 +9,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="27" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="com.a_team.taskmanager.PRIVATE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="com.a_team.taskmanager.PRIVATE"/>
 
     <application
         android:name=".BasicApp"
@@ -54,9 +55,8 @@
 
         <receiver android:name=".alarm.receivers.NotificationReceiver"
             android:exported="false">
-            <intent-filter
-                android:priority="999">
-                <action android:name="com.a_team.taskmanager.notification.AlarmService"/>
+            <intent-filter>
+                <action android:name="artyomefimov.shownotification"/>
             </intent-filter>
         </receiver>
     </application>

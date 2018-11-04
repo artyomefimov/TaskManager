@@ -77,10 +77,12 @@ public class NotificationBuilder {
 
     private long [] buildVibratorPattern() {
         long msToWaitBeforeTurningVibratorOn = 0;
-        long msToKeepVibratorOn = 1000;
-        long msToSleep = 1000;
+        long msToKeepVibratorOn = 500;
+        long msToSleep = 200;
         return new long[] {
                 msToWaitBeforeTurningVibratorOn,
+                msToKeepVibratorOn,
+                msToSleep,
                 msToKeepVibratorOn,
                 msToSleep
         };
