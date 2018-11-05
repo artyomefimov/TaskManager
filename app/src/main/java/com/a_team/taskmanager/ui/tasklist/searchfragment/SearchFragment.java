@@ -79,7 +79,7 @@ public class SearchFragment extends Fragment {
 
         mSearchUtil = TaskSearchUtil.getInstance();
 
-        new AsyncSearchPerformer().execute();
+        new AsyncSearchTask().execute();
 
         return view;
     }
@@ -153,7 +153,7 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private class AsyncSearchPerformer extends AsyncTask<Void, Void, List<Task>> {
+    private class AsyncSearchTask extends AsyncTask<Void, Void, List<Task>> {
         private List<Task> mTasksFromSearch;
 
         @Override

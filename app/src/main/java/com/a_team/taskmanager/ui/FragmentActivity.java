@@ -11,6 +11,7 @@ import com.a_team.taskmanager.R;
 
 public abstract class FragmentActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
     private FragmentManager fragmentManager;
+
     protected abstract Fragment createFragment();
 
     @LayoutRes
@@ -25,8 +26,8 @@ public abstract class FragmentActivity extends AppCompatActivity implements Frag
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(this);
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             fragment = createFragment();
             FragmentTransaction transaction = fragmentManager.beginTransaction();

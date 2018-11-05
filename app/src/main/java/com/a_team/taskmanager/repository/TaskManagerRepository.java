@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.content.Context;
 import android.net.Uri;
+
+import com.a_team.taskmanager.alarm.AlarmManager;
 import com.a_team.taskmanager.database.TaskManagerDatabase;
 import com.a_team.taskmanager.entity.Task;
 
@@ -59,7 +61,14 @@ public class TaskManagerRepository {
     }
 
     public void deleteTasks(Task... tasks) {
+        removeNotifications(tasks);
         mDatabase.taskDao().deleteTasks(tasks);
+    }
+
+    private void removeNotifications(Task... tasks) {
+        for (int i = 0; i < tasks.length; i++) {
+            AlarmManager.removeNotification(mContext, tasks[i]);
+        }
     }
 
     public File getPhotoFile(String fileName) {

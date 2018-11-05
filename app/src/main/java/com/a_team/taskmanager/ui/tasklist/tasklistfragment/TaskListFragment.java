@@ -38,10 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskListFragment extends Fragment {
-
-    private static final String TAG = "TaskListFragment";
     public static final int REQUEST_CODE = 1;
-    private static final String SEARCH_FRAGMENT = "searchFragment";
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mNewTaskButton;
@@ -187,14 +184,12 @@ public class TaskListFragment extends Fragment {
         private Task mTask;
         private TextView mTitle;
         private TextView mDescription;
-        private ImageView mImage;
 
         private TaskListViewHolder(View view, MultiSelector selector) {
             super(view, selector);
 
             mTitle = itemView.findViewById(R.id.task_title);
             mDescription = itemView.findViewById(R.id.task_description);
-            mImage = itemView.findViewById(R.id.task_image);
 
             itemView.setOnClickListener(this);
 

@@ -14,7 +14,7 @@ public class Optional<M> {
         return this.optional == null;
     }
 
-    public M get() {
+    public M getValue() {
         return optional;
     }
 }

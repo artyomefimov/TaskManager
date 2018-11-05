@@ -18,7 +18,8 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
 
     @NonNull
     public static Intent newIntent(Context context, Task task) {
-        return new Intent(context, SingleTaskActivity.class).putExtra(ARG_CURRENT_TASK, task);
+        return new Intent(context, SingleTaskActivity.class)
+                .putExtra(ARG_CURRENT_TASK, task);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
 
     private void saveIfNecessary() {
         if (isDataChanged)
-            TaskOperationsManagerKeeper.getInstance().getTaskOperationsManager().updateTask(this);
+            TaskOperationsManagerKeeper.getInstance().getTaskOperationsManager().updateOrInsertTask(this);
         finish();
     }
 }

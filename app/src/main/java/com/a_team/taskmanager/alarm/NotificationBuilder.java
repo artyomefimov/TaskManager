@@ -19,10 +19,15 @@ import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.activity.TaskListActivity;
 import com.a_team.taskmanager.utils.NullStringProcessor;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class NotificationBuilder {
     private static NotificationBuilder instance;
     private static final String CHANNEL_ID = "com.a_team.taskmanager.alarm.NotificationBuilder";
     private static final String CHANNEL_NAME = "Keep app notifications";
+
+    private static final int LED_ON = 2000;
+    private static final int LED_OFF = 2000;
 
     private NotificationBuilder() {
     }
@@ -47,11 +52,16 @@ public class NotificationBuilder {
 
     Notification buildNotification(Context context, Task task) {
         Resources resources = context.getResources();
-        Intent onNotificationClickedIntent = buildIntent(context, task);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, onNotificationClickedIntent, 0);
 
-        String contentTitle = NullStringProcessor.valueOf(task.getTitle());
+        Intent onNotificationClickedIntent = buildIntent(context, task);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+                onNotificationClickedIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        String defaultTitle = resources.getString(R.string.no_title);
+        String contentTitle = NullStringProcessor.valueOfTitle(task.getTitle(), defaultTitle);
+
         String contentText = NullStringProcessor.valueOf(task.getDescription());
+
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         long [] vibratorPattern = buildVibratorPattern();
 
@@ -63,16 +73,19 @@ public class NotificationBuilder {
                 .setSmallIcon(R.drawable.ic_action_alarm)
                 .setSound(alarmSound)
                 .setVibrate(vibratorPattern)
-                .setLights(Color.RED, 3000, 3000)
+                .setLights(Color.RED, LED_ON, LED_OFF)
+                .setAutoCancel(true)
                 .build();
     }
 
     private Intent buildIntent(Context context, Task task) {
+        Intent intent;
         if (task == null) {
-            return TaskListActivity.newIntent(context);
+            intent = TaskListActivity.newIntent(context);
         } else {
-            return SingleTaskActivity.newIntent(context, task);
+            intent = SingleTaskActivity.newIntent(context, task);
         }
+        return intent;
     }
 
     private long [] buildVibratorPattern() {

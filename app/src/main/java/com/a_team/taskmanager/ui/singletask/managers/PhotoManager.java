@@ -91,13 +91,8 @@ public class PhotoManager {
         fragment.getCallback().onDataChanged(true);
     }
 
-    void removePhotoIfNecessary(Activity activity) {
-        if (mIsShouldDeletePhoto)
-            removePhoto(activity, mPhotoFile);
-    }
-
     public void markPhotoForDelete(AbstractTaskFragment fragment, ImageView imageView) {
-        mIsShouldDeletePhoto = true;
+        removePhoto(fragment.getActivity(), mPhotoFile);
         imageView.setImageDrawable(null);
         fragment.getCallback().onDataChanged(true);
     }
@@ -111,9 +106,5 @@ public class PhotoManager {
 
     public File getPhotoFile() {
         return mPhotoFile;
-    }
-
-    public boolean isTaskHasNoPhoto() {
-        return mIsHasNoPhoto;
     }
 }

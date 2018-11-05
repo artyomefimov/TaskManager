@@ -38,7 +38,7 @@ import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.DIALOG_IM
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_PHOTO;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_REAL_PHOTO;
 
-public abstract class AbstractTaskFragment extends Fragment implements AlarmDateTimePicker.OnChangedNotificationDateCallback{
+public abstract class AbstractTaskFragment extends Fragment implements AlarmDateTimePicker.OnChangedNotificationDateCallback {
     private FloatingActionButton mMakePhotoButton;
     private FloatingActionButton mSetNotificationButton;
     private FloatingActionButton mDeleteNotificationButton;
@@ -115,7 +115,7 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
         mInitializationManager = new InitializationManager(mTask);
         mInitializationManager.initViewModel(this);
         mPhotoManager = new PhotoManager(mInitializationManager.getViewModel(), mTask);
-        mTaskOperationsManager = new TaskOperationsManager(mInitializationManager.getViewModel(), mTask, mPhotoManager);
+        mTaskOperationsManager = new TaskOperationsManager(mInitializationManager.getViewModel(), mTask);
         TaskOperationsManagerKeeper.getInstance().setTaskOperationsManager(mTaskOperationsManager);
     }
 
@@ -138,11 +138,13 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
 
     private void configureDeleteNotificationButton() {
         mDeleteNotificationButton.setOnClickListener((view) -> {
-            mTask.setNotificationDate(null);
-            UIUpdateManager.removeNotificationText(mNotificationTimestamp);
-            isAlarmRemoved = true;
-            isAlarmSet = false;
-            mCallback.onDataChanged(true);
+            if (mTask.getNotificationDate() != null) {
+                mTask.setNotificationDate(null);
+                UIUpdateManager.removeNotificationText(mNotificationTimestamp);
+                isAlarmRemoved = true;
+                isAlarmSet = false;
+                mCallback.onDataChanged(true);
+            }
         });
     }
 
@@ -243,7 +245,7 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
             AlarmManager.addNotification(getActivity(), mTask);
         if (isAlarmRemoved)
             AlarmManager.removeNotification(getActivity(), mTask);
-        mTaskOperationsManager.updateTask(getActivity());
+        mTaskOperationsManager.updateOrInsertTask(getActivity());
         finishActivity();
     }
 

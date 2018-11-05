@@ -35,4 +35,5 @@
     <!--notification-->
     
     <string name="notification_ticker">Don\'t forget!</string>
+    <string name="no_title">No title</string>
 </resources>

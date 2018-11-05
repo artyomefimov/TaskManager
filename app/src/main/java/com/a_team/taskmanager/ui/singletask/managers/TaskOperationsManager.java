@@ -12,18 +12,13 @@ public class TaskOperationsManager {
 
     private TaskViewModel mViewModel;
     private Task mTask;
-    private PhotoManager mPhotoManager;
 
-    public TaskOperationsManager(TaskViewModel viewModel, Task task, PhotoManager photoManager) {
+    public TaskOperationsManager(TaskViewModel viewModel, Task task) {
         mViewModel = viewModel;
         mTask = task;
-        mPhotoManager = photoManager;
     }
 
-    public void updateTask(Activity activity) {
-        if (mPhotoManager != null) {
-            mPhotoManager.removePhotoIfNecessary(activity);
-        }
+    public void updateOrInsertTask(Activity activity) {
         FillingTitleHelper.fillTitleIfEmpty(mTask);
         mViewModel.updateOrInsertTask(mTask);
         ToastMaker.show(activity, R.string.saving_changes, ToastPeriod.Short);
