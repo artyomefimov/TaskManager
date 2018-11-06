@@ -15,7 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.utils.IntentMaker;
+import com.a_team.taskmanager.utils.IntentBuilder;
 
 import static com.a_team.taskmanager.alarm.AlarmConstants.ACTION_SHOW_NOTIFICATION;
 import static com.a_team.taskmanager.alarm.AlarmConstants.BUNDLE;
@@ -80,7 +80,7 @@ public class AlarmService extends IntentService {
 
     public static void setAlarm(Context context, Task task) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = IntentMaker.getInstance().buildPendingIntent(context, task);
+        PendingIntent pendingIntent = IntentBuilder.getInstance().buildPendingIntent(context, task);
         if (alarmManager != null) {
             scheduleAlarm(alarmManager, task, pendingIntent);
         }
@@ -94,7 +94,7 @@ public class AlarmService extends IntentService {
     }
 
     public static void removeAlarm(Context context, Task task) {
-        PendingIntent pendingIntent = IntentMaker.getInstance().buildPendingIntent(context, task);
+        PendingIntent pendingIntent = IntentBuilder.getInstance().buildPendingIntent(context, task);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {

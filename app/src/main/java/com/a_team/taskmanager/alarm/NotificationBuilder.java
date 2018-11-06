@@ -17,6 +17,7 @@ import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.activity.TaskListActivity;
+import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.NullStringProcessor;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
@@ -53,9 +54,7 @@ public class NotificationBuilder {
     Notification buildNotification(Context context, Task task) {
         Resources resources = context.getResources();
 
-        Intent onNotificationClickedIntent = buildIntent(context, task);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-                onNotificationClickedIntent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent contentIntent = buildPendingIntent(context, task);
 
         String defaultTitle = resources.getString(R.string.no_title);
         String contentTitle = NullStringProcessor.valueOfTitle(task.getTitle(), defaultTitle);
@@ -78,14 +77,11 @@ public class NotificationBuilder {
                 .build();
     }
 
-    private Intent buildIntent(Context context, Task task) {
-        Intent intent;
-        if (task == null) {
-            intent = TaskListActivity.newIntent(context);
-        } else {
-            intent = SingleTaskActivity.newIntent(context, task);
-        }
-        return intent;
+    private PendingIntent buildPendingIntent(Context context, Task task) {
+        IntentBuilder intentBuilder = IntentBuilder.getInstance();
+        return task == null ?
+                intentBuilder.buildNotificationIntentForTaskListActivity(context) :
+                intentBuilder.buildNotificationIntentForSingleTaskActivity(context, task);
     }
 
     private long [] buildVibratorPattern() {
