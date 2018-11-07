@@ -6,8 +6,8 @@ import android.widget.Toast;
 
 public class ToastMaker {
     public enum ToastPeriod {
-        Short(Toast.LENGTH_SHORT),
-        Long(Toast.LENGTH_LONG);
+        SHORT(Toast.LENGTH_SHORT),
+        LONG(Toast.LENGTH_LONG);
 
         int period;
         ToastPeriod(int period) {

@@ -8,6 +8,9 @@ import android.view.MenuItem;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.utils.FilenameGenerator;
+import com.a_team.taskmanager.utils.ToastMaker;
+
+import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod.SHORT;
 
 public class NewTaskFragment extends AbstractTaskFragment {
     @Override
@@ -15,6 +18,18 @@ public class NewTaskFragment extends AbstractTaskFragment {
         receiveArgsFromBundle();
         setUniqueNameForPhotoFile();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    protected void configureSetNotificationButton() {
+        mSetNotificationButton.setOnClickListener((view) ->
+                ToastMaker.show(getActivity(), R.string.set_notification_on_not_created_task, SHORT));
+    }
+
+    @Override
+    protected void configureDeleteNotificationButton() {
+        mDeleteNotificationButton.setOnClickListener((view) ->
+                ToastMaker.show(getActivity(), R.string.set_notification_on_not_created_task, SHORT));
     }
 
     private void setUniqueNameForPhotoFile() {

@@ -39,10 +39,10 @@ import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_P
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_REAL_PHOTO;
 
 public abstract class AbstractTaskFragment extends Fragment implements AlarmDateTimePicker.OnChangedNotificationDateCallback {
+    protected FloatingActionButton mSetNotificationButton;
+    protected FloatingActionButton mDeleteNotificationButton;
+    protected TextView mNotificationTimestamp;
     private FloatingActionButton mMakePhotoButton;
-    private FloatingActionButton mSetNotificationButton;
-    private FloatingActionButton mDeleteNotificationButton;
-    private TextView mNotificationTimestamp;
     private EditText mTitleField;
     private EditText mDescriptionField;
     private ImageView mPhoto;
@@ -51,10 +51,10 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
     private InitializationManager mInitializationManager;
     private TaskOperationsManager mTaskOperationsManager;
 
-    private OnChangedCallback mCallback;
+    protected OnChangedCallback mCallback;
 
-    private boolean isAlarmSet;
-    private boolean isAlarmRemoved;
+    protected boolean isAlarmSet;
+    protected boolean isAlarmRemoved;
 
     protected Task mTask;
 
@@ -129,24 +129,9 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
         configurePhotoView();
     }
 
-    private void configureSetNotificationButton() {
-        mSetNotificationButton.setOnClickListener((view) -> {
-            AlarmDateTimePicker alarmDateTimePicker = new AlarmDateTimePicker(this);
-            alarmDateTimePicker.showDateTimePicker(this);
-        });
-    }
+    protected abstract void configureSetNotificationButton();
 
-    private void configureDeleteNotificationButton() {
-        mDeleteNotificationButton.setOnClickListener((view) -> {
-            if (mTask.getNotificationDate() != null) {
-                mTask.setNotificationDate(null);
-                UIUpdateManager.removeNotificationText(mNotificationTimestamp);
-                isAlarmRemoved = true;
-                isAlarmSet = false;
-                mCallback.onDataChanged(true);
-            }
-        });
-    }
+    protected abstract void configureDeleteNotificationButton();
 
     private void configureNotificationTimestampButton() {
         UIUpdateManager.setNotificationText(mNotificationTimestamp, mTask.getNotificationDate());

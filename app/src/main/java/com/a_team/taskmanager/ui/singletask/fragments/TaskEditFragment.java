@@ -6,12 +6,35 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.a_team.taskmanager.R;
+import com.a_team.taskmanager.ui.singletask.managers.UIUpdateManager;
+import com.a_team.taskmanager.ui.singletask.managers.alarms.AlarmDateTimePicker;
 
 public class TaskEditFragment extends AbstractTaskFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         receiveArgsFromBundle();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    protected void configureSetNotificationButton() {
+        mSetNotificationButton.setOnClickListener((view) -> {
+            AlarmDateTimePicker alarmDateTimePicker = new AlarmDateTimePicker(this);
+            alarmDateTimePicker.showDateTimePicker(this);
+        });
+    }
+
+    @Override
+    protected void configureDeleteNotificationButton() {
+        mDeleteNotificationButton.setOnClickListener((view) -> {
+            if (mTask.getNotificationDate() != null) {
+                mTask.setNotificationDate(null);
+                UIUpdateManager.removeNotificationText(mNotificationTimestamp);
+                isAlarmRemoved = true;
+                isAlarmSet = false;
+                mCallback.onDataChanged(true);
+            }
+        });
     }
 
     @Override

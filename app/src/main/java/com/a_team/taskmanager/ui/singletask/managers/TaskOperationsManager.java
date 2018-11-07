@@ -5,6 +5,8 @@ import android.app.Activity;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.utils.ToastMaker;
 import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
+import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod.SHORT;
+
 import com.a_team.taskmanager.viewmodel.TaskViewModel;
 import com.a_team.taskmanager.entity.Task;
 
@@ -21,11 +23,11 @@ public class TaskOperationsManager {
     public void updateOrInsertTask(Activity activity) {
         FillingTitleHelper.fillTitleIfEmpty(mTask);
         mViewModel.updateOrInsertTask(mTask);
-        ToastMaker.show(activity, R.string.saving_changes, ToastPeriod.Short);
+        ToastMaker.show(activity, R.string.saving_changes, SHORT);
     }
 
     public void deleteTask(Activity activity) {
         mViewModel.deleteTask(mTask);
-        ToastMaker.show(activity, R.string.deleting_task, ToastPeriod.Short);
+        ToastMaker.show(activity, R.string.deleting_task, SHORT);
     }
 }

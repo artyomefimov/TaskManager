@@ -59,9 +59,13 @@ public class AlarmDateTimePicker {
         mDateTimeDialogFragment.set24HoursMode(true);
 
         int currentYear = mCalendar.get(Calendar.YEAR);
+        int currentMonth = mCalendar.get(Calendar.MONTH);
+        int currentDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+
+        mDateTimeDialogFragment.setMinimumDateTime(new GregorianCalendar(currentYear, currentMonth, currentDay).getTime());
+
         int yearDecadeAfter = currentYear + 10;
 
-        mDateTimeDialogFragment.setMinimumDateTime(new GregorianCalendar(currentYear, Calendar.JANUARY, 1).getTime());
         mDateTimeDialogFragment.setMaximumDateTime(new GregorianCalendar(yearDecadeAfter, Calendar.DECEMBER, 31).getTime());
 
         try {
@@ -81,7 +85,7 @@ public class AlarmDateTimePicker {
                     mCallback.onNotificationDateChanged(date);
                     mDateTimeDialogFragment.dismiss();
                 } else {
-                    ToastMaker.show(context, R.string.invalid_date_time, ToastPeriod.Long);
+                    ToastMaker.show(context, R.string.invalid_date_time, ToastPeriod.LONG);
                 }
             }
 

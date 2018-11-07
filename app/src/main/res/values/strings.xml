@@ -36,4 +36,6 @@
     
     <string name="notification_ticker">Don\'t forget!</string>
     <string name="no_title">No title</string>
+
+    <string name="set_notification_on_not_created_task">You should create the task first!</string>
 </resources>
