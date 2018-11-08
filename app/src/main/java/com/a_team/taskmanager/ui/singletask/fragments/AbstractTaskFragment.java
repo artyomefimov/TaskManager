@@ -32,6 +32,8 @@ import java.util.Date;
 
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_CURRENT_TASK;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_DESCRIPTION;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_IS_ALARM_REMOVED;
+import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_IS_ALARM_SET;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_TIMESTAMP;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_TITLE;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.DIALOG_IMAGE;
@@ -73,6 +75,10 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        if (savedInstanceState != null) {
+            isAlarmSet = savedInstanceState.getBoolean(ARG_IS_ALARM_SET);
+            isAlarmRemoved = savedInstanceState.getBoolean(ARG_IS_ALARM_REMOVED);
+        }
     }
 
     @Override
@@ -80,6 +86,8 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
         outState.putString(ARG_TITLE, mTitleField.getText().toString());
         outState.putString(ARG_DESCRIPTION, mDescriptionField.getText().toString());
         outState.putString(ARG_TIMESTAMP, mNotificationTimestamp.getText().toString());
+        outState.putBoolean(ARG_IS_ALARM_SET, isAlarmSet);
+        outState.putBoolean(ARG_IS_ALARM_REMOVED, isAlarmRemoved);
         super.onSaveInstanceState(outState);
     }
 
