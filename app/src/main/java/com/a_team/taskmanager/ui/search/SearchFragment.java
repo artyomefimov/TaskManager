@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.tasklist.searchfragment;
+package com.a_team.taskmanager.ui.search;
 
 import android.app.Activity;
 import android.content.Intent;

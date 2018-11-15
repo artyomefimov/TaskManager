@@ -22,13 +22,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.ui.search.SearchActivity;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
-import com.a_team.taskmanager.ui.tasklist.searchfragment.SearchFragment;
+import com.a_team.taskmanager.ui.search.SearchFragment;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.MultipleSelectManager;
 import com.bignerdranch.android.multiselector.MultiSelector;
@@ -39,6 +39,7 @@ import java.util.List;
 
 public class TaskListFragment extends Fragment {
     public static final int REQUEST_CODE = 1;
+    public static final String TAG = "TaskListFragment";
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mNewTaskButton;
@@ -136,24 +137,29 @@ public class TaskListFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 hideKeyboard(getActivity(), getView());
-                startSearchFragment(query);
+                startSearchActivity(query);
                 return true;
             }
 
-            private void startSearchFragment(String query) {
-                FragmentManager fragmentManager = getFragmentManager();
-                if (fragmentManager != null) {
-                    SearchFragment searchFragment = SearchFragment.newInstance(query);
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment_container, searchFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                }
+            private void startSearchActivity(String query) {
+//                FragmentManager fragmentManager = getFragmentManager();
+//                if (fragmentManager != null) {
+//                    SearchFragment searchFragment = SearchFragment.newInstance(query);
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                    fragmentTransaction.replace(R.id.fragment_container, searchFragment);
+//                    fragmentTransaction.commit();
+//                }
+                TaskListFragment taskListFragment = TaskListFragment.this;
+                Intent intent = SearchActivity.newIntent(taskListFragment.getActivity(), query);
+                taskListFragment.startActivity(intent);
             }
 
             private void hideKeyboard(Context context, View view) {
-                InputMethodManager imm = ((InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE));
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (context != null) {
+                    InputMethodManager imm = ((InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE));
+                    if (imm != null)
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
 
             @Override

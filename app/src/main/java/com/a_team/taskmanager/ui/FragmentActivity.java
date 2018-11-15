@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.a_team.taskmanager.R;
+import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
 
 public abstract class FragmentActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
     private FragmentManager fragmentManager;
@@ -49,6 +50,6 @@ public abstract class FragmentActivity extends AppCompatActivity implements Frag
     @Override
     public boolean onSupportNavigateUp() {
         fragmentManager.popBackStack();
-        return true;
+        return false;
     }
 }
