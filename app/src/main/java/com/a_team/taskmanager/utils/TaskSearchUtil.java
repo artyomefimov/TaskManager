@@ -40,7 +40,7 @@ public class TaskSearchUtil {
     @SuppressWarnings("unchecked")
     public List<Task> performSearch(final String query) {
         mTasksFromSearch = new ArrayList<>();
-        performSearch0(query);
+        findTasksByQuery(query);
         return isNoResults() ? Collections.emptyList() : Collections.unmodifiableList(mTasksFromSearch);
     }
 
@@ -48,10 +48,13 @@ public class TaskSearchUtil {
         return mTasksFromSearch == null || mTasksFromSearch.size() == 0;
     }
 
-    private void performSearch0(final String query) {
+    private void findTasksByQuery(final String query) {
         Set<Map.Entry<Long, String>> entrySet = mStringData.entrySet();
+        String regex = makeRegex(query);
+        String entryValue;
         for (Map.Entry<Long, String> entry : entrySet) {
-            if (entry.getValue().matches(makeRegex(query))) {
+            entryValue = entry.getValue();
+            if (entryValue.matches(regex)) {
                 Task task = mTasks.get(entry.getKey());
                 mTasksFromSearch.add(task);
             }
@@ -59,6 +62,6 @@ public class TaskSearchUtil {
     }
 
     private String makeRegex(String entry) {
-        return "[^\\\\w\\\\d]*" + entry + "+" + "[^\\\\w\\\\d]*";
+        return "[а-я\\w\\s\\W]*" + entry + "+" + "[а-я\\w\\s\\W]*";
     }
 }

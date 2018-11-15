@@ -1,5 +1,6 @@
 package com.a_team.taskmanager.ui.tasklist.searchfragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -162,8 +163,10 @@ public class SearchFragment extends Fragment {
         }
 
         private void showProgressBar() {
-            mRecyclerView.setVisibility(View.GONE);
-            mProgressBar.setVisibility(View.VISIBLE);
+            if (isActivityRunning()) {
+                mRecyclerView.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
@@ -187,14 +190,23 @@ public class SearchFragment extends Fragment {
         }
 
         private void showNoResultsText() {
-            mRecyclerView.setVisibility(View.GONE);
-            mProgressBar.setVisibility(View.GONE);
-            mNoResultsTextView.setVisibility(View.VISIBLE);
+            if (isActivityRunning()) {
+                mRecyclerView.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
+                mNoResultsTextView.setVisibility(View.VISIBLE);
+            }
         }
 
         private void hideProgressBar() {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.GONE);
+            if (isActivityRunning()) {
+                mRecyclerView.setVisibility(View.VISIBLE);
+                mProgressBar.setVisibility(View.GONE);
+            }
+        }
+
+        private boolean isActivityRunning() {
+            Activity activity = SearchFragment.this.getActivity();
+            return activity != null && !(activity.isFinishing() || activity.isDestroyed());
         }
     }
 }
