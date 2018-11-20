@@ -3,6 +3,7 @@ package com.a_team.taskmanager.ui.singletask.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
@@ -19,7 +20,7 @@ public class SingleTaskActivity extends FragmentActivity implements AbstractTask
     @NonNull
     public static Intent newIntent(Context context, Task task) {
         return new Intent(context, SingleTaskActivity.class)
-                .putExtra(ARG_CURRENT_TASK, task);
+                .putExtra(ARG_CURRENT_TASK, (Parcelable) task);
     }
 
     @Override

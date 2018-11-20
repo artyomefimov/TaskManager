@@ -3,6 +3,7 @@ package com.a_team.taskmanager.utils;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 
 import com.a_team.taskmanager.alarm.AlarmService;
 import com.a_team.taskmanager.entity.Task;
@@ -45,6 +46,6 @@ public class IntentBuilder {
 
     private Intent buildIntentForSingleTaskActivity(Context context, Task task) {
         return new Intent(context, SingleTaskActivity.class)
-                .putExtra(ARG_CURRENT_TASK, task);
+                .putExtra(ARG_CURRENT_TASK, (Parcelable) task);
     }
 }
