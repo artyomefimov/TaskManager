@@ -3,4 +3,7 @@
     <files-path
         name="task_photos"
         path="."/>
+    <external-files-path
+        name="backup"
+        path="KeepBackup"/>
 </paths>

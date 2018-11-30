@@ -24,9 +24,10 @@ import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import java.util.Collections;
 import java.util.List;
 
+import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_FROM_SEARCH_REQUEST_CODE;
+
 public class SearchFragment extends Fragment {
     private static final String QUERY = "query";
-    private static final int REQUEST_CODE = 2;
 
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
@@ -119,7 +120,7 @@ public class SearchFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = SingleTaskActivity.newIntent(getActivity(), mTask);
-            startActivityForResult(intent, REQUEST_CODE);
+            startActivityForResult(intent, SELECT_TASK_FROM_SEARCH_REQUEST_CODE);
         }
     }
 

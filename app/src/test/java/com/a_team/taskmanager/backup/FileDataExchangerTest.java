@@ -1,7 +1,5 @@
 package com.a_team.taskmanager.backup;
 
-import android.app.Application;
-
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.entity.TaskBuilder;
 
@@ -14,14 +12,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class FileDataExchangerTest {
     private FileDataWriter writer;
     private FileDataReader reader;
     private List<Task> tasks;
-
-    private Application application;
 
     @Before
     public void setUp() {
@@ -31,8 +27,6 @@ public class FileDataExchangerTest {
         Task task1 = new TaskBuilder()
                 .setId(0L)
                 .setTitle("t1")
-                .setDescription("d1")
-                .setNotificationDate(new Date().getTime())
                 .setFileName("f1")
                 .build();
         Task task2 = new TaskBuilder()
@@ -50,7 +44,7 @@ public class FileDataExchangerTest {
     @Test
     public void writeAndReadTasksFromBackup() throws IOException {
         File file = writer.writeTasksToBackup(null, tasks);
-        List<Task> fromFile = reader.readTasksFromBackup(file);
+        List<Task> fromFile = reader.readTasksFromBackup(null, file);
         assertEquals(tasks, fromFile);
     }
 }

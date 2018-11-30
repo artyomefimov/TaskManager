@@ -5,11 +5,16 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.content.Context;
 import android.net.Uri;
 
+import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.alarm.AlarmManager;
 import com.a_team.taskmanager.database.TaskManagerDatabase;
 import com.a_team.taskmanager.entity.Task;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class TaskManagerRepository {
@@ -17,7 +22,7 @@ public class TaskManagerRepository {
 
     private MediatorLiveData<List<Task>> mObservableTasks;
     private final TaskManagerDatabase mDatabase;
-    private Context mContext;
+    private WeakReference<Context> mContext;
 
     public static TaskManagerRepository getInstance(final TaskManagerDatabase database, final Context applicationContext) {
         if (mInstance == null) {
@@ -40,7 +45,7 @@ public class TaskManagerRepository {
             }
         });
 
-        mContext = applicationContext;
+        mContext = new WeakReference<>(applicationContext);
     }
 
     public LiveData<List<Task>> getTasks() {
@@ -65,18 +70,32 @@ public class TaskManagerRepository {
         mDatabase.taskDao().deleteTasks(tasks);
     }
 
+    public void insertTasks(Task... tasks) {
+        mDatabase.taskDao().insertTasks(tasks);
+    }
+
     private void removeNotifications(Task... tasks) {
-        for (int i = 0; i < tasks.length; i++) {
-            AlarmManager.removeNotification(mContext, tasks[i]);
+        Context context = mContext.get();
+        if (context != null) {
+            for (Task task : tasks) {
+                AlarmManager.removeNotification(context, task);
+            }
         }
     }
 
-    public File getPhotoFile(String fileName) {
-        File filesDir = mContext.getFilesDir();
-        return new File(filesDir, fileName);
+    public File getFile(String fileName) {
+        Context context = mContext.get();
+        if (context != null) {
+            File filesDir = context.getFilesDir();
+            return new File(filesDir, fileName);
+        } else
+            return null;
     }
 
     public void removePhotoFile(Uri uri) {
-        mContext.getContentResolver().delete(uri, null, null);
+        Context context = mContext.get();
+        if (context != null) {
+            context.getContentResolver().delete(uri, null, null);
+        }
     }
 }

@@ -27,6 +27,7 @@ import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManagerKeeper;
 import com.a_team.taskmanager.ui.singletask.managers.UIUpdateManager;
 import com.a_team.taskmanager.ui.singletask.managers.alarms.AlarmDateTimePicker;
+import com.a_team.taskmanager.utils.ToastMaker;
 
 import java.util.Date;
 
@@ -37,8 +38,8 @@ import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_IS_AL
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_TIMESTAMP;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_TITLE;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.DIALOG_IMAGE;
-import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_PHOTO;
-import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_REAL_PHOTO;
+import static com.a_team.taskmanager.utils.RequestCodeStorage.MAKE_PHOTO_REQUEST_CODE;
+import static com.a_team.taskmanager.utils.RequestCodeStorage.REAL_PHOTO_REQUEST_CODE;
 
 public abstract class AbstractTaskFragment extends Fragment implements AlarmDateTimePicker.OnChangedNotificationDateCallback {
     protected FloatingActionButton mSetNotificationButton;
@@ -116,7 +117,11 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
     }
 
     protected void receiveArgsFromBundle() {
-        mTask = getArguments().getParcelable(ARG_CURRENT_TASK);
+        Bundle args = getArguments();
+        if (args == null)
+            ToastMaker.show(getActivity(), R.string.incorrect_task, ToastMaker.ToastPeriod.SHORT);
+        else
+            mTask = getArguments().getParcelable(ARG_CURRENT_TASK);
     }
 
     private void initManagers() {
@@ -191,7 +196,7 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
         mPhoto.setOnClickListener((view) -> {
             if (getFragmentManager() != null) {
                 RealImageFragment fragment = RealImageFragment.newInstance(mPhotoManager.getPhotoFile());
-                fragment.setTargetFragment(AbstractTaskFragment.this, REQUEST_REAL_PHOTO);
+                fragment.setTargetFragment(AbstractTaskFragment.this, REAL_PHOTO_REQUEST_CODE);
                 fragment.show(getFragmentManager(), DIALOG_IMAGE);
             }
         });
@@ -218,14 +223,17 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
         if (resultCode != Activity.RESULT_OK)
             return;
         switch (requestCode) {
-            case REQUEST_PHOTO:
+            case MAKE_PHOTO_REQUEST_CODE:
                 mPhotoManager.getPhotoFromCamera(this, mPhoto);
         }
     }
 
     private void finishActivity() {
-        getActivity().setResult(Activity.RESULT_OK);
-        getActivity().finish();
+        Activity activity = getActivity();
+        if (activity != null) {
+            getActivity().setResult(Activity.RESULT_OK);
+            getActivity().finish();
+        }
     }
 
     protected void performPhotoUpdating() {

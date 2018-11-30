@@ -18,13 +18,13 @@ public class ToastMaker {
         }
     }
 
-    public static void show(Context context, @StringRes int operation, ToastPeriod period) {
-        Toast.makeText(context, operation, period.getPeriod())
+    public static void show(Context context, @StringRes int message, ToastPeriod period) {
+        Toast.makeText(context, message, period.getPeriod())
                 .show();
     }
 
-    public static void show(Context context, String operation, ToastPeriod period) {
-        Toast.makeText(context, operation, period.getPeriod())
+    public static void show(Context context, String message, ToastPeriod period) {
+        Toast.makeText(context, message, period.getPeriod())
                 .show();
     }
 }

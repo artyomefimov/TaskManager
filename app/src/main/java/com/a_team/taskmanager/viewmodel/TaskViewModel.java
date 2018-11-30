@@ -39,7 +39,7 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public File getPhotoFile(String fileName) {
-        return fileName != null ? mRepository.getPhotoFile(fileName) : null;
+        return fileName != null ? mRepository.getFile(fileName) : null;
     }
 
     public void removePhotoFile(Uri uri) {

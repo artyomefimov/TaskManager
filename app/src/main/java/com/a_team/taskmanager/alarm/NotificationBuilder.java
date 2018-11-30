@@ -78,10 +78,9 @@ public class NotificationBuilder {
     }
 
     private PendingIntent buildPendingIntent(Context context, Task task) {
-        IntentBuilder intentBuilder = IntentBuilder.getInstance();
         return task == null ?
-                intentBuilder.buildNotificationIntentForTaskListActivity(context) :
-                intentBuilder.buildNotificationIntentForSingleTaskActivity(context, task);
+                IntentBuilder.buildNotificationIntentForTaskListActivity(context) :
+                IntentBuilder.buildNotificationIntentForSingleTaskActivity(context, task);
     }
 
     private long [] buildVibratorPattern() {

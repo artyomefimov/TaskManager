@@ -1,16 +1,18 @@
 package com.a_team.taskmanager.ui.tasklist.tasklistfragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,19 +30,23 @@ import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.search.SearchActivity;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
-import com.a_team.taskmanager.ui.search.SearchFragment;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.MultipleSelectManager;
+import com.a_team.taskmanager.utils.IntentBuilder;
+import com.a_team.taskmanager.utils.ToastMaker;
+import com.a_team.taskmanager.viewmodel.TaskListViewModel;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import static com.a_team.taskmanager.utils.RequestCodeStorage.CHOOSE_BACKUP_REQUEST_CODE;
+import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_REQUEST_CODE;
 
 public class TaskListFragment extends Fragment {
-    public static final int REQUEST_CODE = 1;
-    public static final String TAG = "TaskListFragment";
-
     private RecyclerView mRecyclerView;
     private FloatingActionButton mNewTaskButton;
 
@@ -65,12 +71,14 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
-        mInitializationManager = InitializationManager.getInstance();
+        mInitializationManager = new InitializationManager();
         mInitializationManager.createViewModelAndSubscribeUI(this);
-        mMultipleSelectManager = MultipleSelectManager.getInstance();
+
+        mMultipleSelectManager = new MultipleSelectManager(mInitializationManager);
         mMultipleSelectManager.configureActionModeCallback(this);
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -81,7 +89,8 @@ public class TaskListFragment extends Fragment {
 
     private void clearActionBarSubtitle() {
         AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        activity.getSupportActionBar().setSubtitle(null);
+        if (activity != null && activity.getSupportActionBar() != null)
+            activity.getSupportActionBar().setSubtitle(null);
     }
 
     @Nullable
@@ -109,7 +118,7 @@ public class TaskListFragment extends Fragment {
         mNewTaskButton.setOnClickListener(view -> {
             Task emptyTask = Task.emptyTask();
             Intent intent = SingleTaskActivity.newIntent(getActivity(), emptyTask);
-            startActivityForResult(intent, REQUEST_CODE);
+            startActivityForResult(intent, SELECT_TASK_REQUEST_CODE);
         });
     }
 
@@ -128,8 +137,11 @@ public class TaskListFragment extends Fragment {
         SearchView searchView = ((SearchView) searchItem.getActionView());
         configureSearchView(searchView);
 
-        MenuItem syncItem = menu.findItem(R.id.menu_sync);
-        configureSyncItem(syncItem);
+        MenuItem storeItem = menu.findItem(R.id.menu_store);
+        configureStoreItem(storeItem);
+
+        MenuItem restoreItem = menu.findItem(R.id.menu_restore);
+        configureRestoreItem(restoreItem);
     }
 
     private void configureSearchView(final SearchView searchView) {
@@ -142,13 +154,6 @@ public class TaskListFragment extends Fragment {
             }
 
             private void startSearchActivity(String query) {
-//                FragmentManager fragmentManager = getFragmentManager();
-//                if (fragmentManager != null) {
-//                    SearchFragment searchFragment = SearchFragment.newInstance(query);
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.replace(R.id.fragment_container, searchFragment);
-//                    fragmentTransaction.commit();
-//                }
                 TaskListFragment taskListFragment = TaskListFragment.this;
                 Intent intent = SearchActivity.newIntent(taskListFragment.getActivity(), query);
                 taskListFragment.startActivity(intent);
@@ -169,16 +174,64 @@ public class TaskListFragment extends Fragment {
         });
     }
 
-    private void configureSyncItem(MenuItem syncItem) {
-        syncItem.setOnMenuItemClickListener(item -> {
-            Snackbar.make(getView(), "Synchronize", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            return false;
+    private void configureStoreItem(MenuItem storeItem) {
+        storeItem.setOnMenuItemClickListener(item -> {
+            Activity activity = TaskListFragment.this.getActivity();
+            TaskListViewModel viewModel = mInitializationManager.getViewModel();
+            List<Task> actualTasks = mInitializationManager.getTasks();
+            try {
+                requestPermissionsIfNecessary(activity);
+                viewModel.storeTasksToBackup(activity, actualTasks);
+            } catch (IOException e) {
+                ToastMaker.show(activity, e.getMessage(), ToastMaker.ToastPeriod.LONG);
+            }
+            return true;
+        });
+    }
+
+    private void requestPermissionsIfNecessary(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int permissionWrite = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            int permissionRead = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+            if (permissionRead != PackageManager.PERMISSION_GRANTED && permissionWrite != PackageManager.PERMISSION_GRANTED) {
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                activity.requestPermissions(permissions, new Random().nextInt());
+            }
+        }
+    }
+
+    private void configureRestoreItem(MenuItem restoreItem) {
+        restoreItem.setOnMenuItemClickListener(item -> {
+            Activity activity = TaskListFragment.this.getActivity();
+            Intent intent = IntentBuilder.buildIntentForChoosingBackupFile();
+            if (activity != null)
+                activity.startActivityForResult(intent, CHOOSE_BACKUP_REQUEST_CODE);
+            return true;
         });
     }
 
     public RecyclerView getRecyclerView() {
         return mRecyclerView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK)
+            return;
+        switch (requestCode) {
+            case CHOOSE_BACKUP_REQUEST_CODE:
+                Activity activity = TaskListFragment.this.getActivity();
+                Uri backupUri = data.getData();
+                if (backupUri != null) {
+                    try {
+                        mInitializationManager.getViewModel().addTasksFromBackupToDatabase(activity, backupUri);
+                    } catch (IOException e) {
+                        ToastMaker.show(activity, e.getMessage(), ToastMaker.ToastPeriod.LONG);
+                    }
+                } else
+                    ToastMaker.show(activity, R.string.incorrect_file_to_restore, ToastMaker.ToastPeriod.SHORT);
+        }
     }
 
     /**

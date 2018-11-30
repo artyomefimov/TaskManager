@@ -80,7 +80,7 @@ public class AlarmService extends IntentService {
 
     public static void setAlarm(Context context, Task task) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = IntentBuilder.getInstance().buildPendingIntent(context, task);
+        PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
         if (alarmManager != null) {
             scheduleAlarm(alarmManager, task, pendingIntent);
         }
@@ -94,11 +94,12 @@ public class AlarmService extends IntentService {
     }
 
     public static void removeAlarm(Context context, Task task) {
-        PendingIntent pendingIntent = IntentBuilder.getInstance().buildPendingIntent(context, task);
+        PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);
         }
+        task.setNotificationDate(null);
     }
 }

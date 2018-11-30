@@ -7,10 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.utils.FilenameGenerator;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
+import com.a_team.taskmanager.utils.RequestCodeStorage;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SelectableHolder;
@@ -18,10 +18,9 @@ import com.bignerdranch.android.multiselector.SelectableHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment.REQUEST_CODE;
+import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_REQUEST_CODE;
 
 public class MultipleSelectManager {
-    private static final MultipleSelectManager ourInstance = new MultipleSelectManager();
 
     private MultiSelector mMultiSelector;
     private ModalMultiSelectorCallback mActionModeCallback;
@@ -30,13 +29,9 @@ public class MultipleSelectManager {
     private List<Task> mSelectedTasks;
     private List<Task> mTasks;
 
-    public static MultipleSelectManager getInstance() {
-        return ourInstance;
-    }
-
-    private MultipleSelectManager() {
+    public MultipleSelectManager(InitializationManager initializationManager) {
         mMultiSelector = new MultiSelector();
-        mInitializationManager = InitializationManager.getInstance();
+        mInitializationManager = initializationManager;
         mSelectedTasks = new ArrayList<>();
     }
 
@@ -74,7 +69,7 @@ public class MultipleSelectManager {
     public void performClick(SelectableHolder holder, TaskListFragment fragment, Task task, int position) {
         if (!mMultiSelector.tapSelection(holder)) {
             Intent intent = SingleTaskActivity.newIntent(fragment.getActivity(), task);
-            fragment.startActivityForResult(intent, REQUEST_CODE);
+            fragment.startActivityForResult(intent, SELECT_TASK_REQUEST_CODE);
         } else {
             if (isCurrentTaskAlreadySelected(position)) {
                 removeSelection(holder, position);

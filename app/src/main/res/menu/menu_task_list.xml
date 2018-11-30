@@ -2,14 +2,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_search"
+        android:icon="@drawable/ic_action_search"
         android:title="@string/menu_search"
-        app:showAsAction="ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        android:icon="@drawable/ic_action_search"/>
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menu_sync"
-        android:title="@string/menu_sync"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_sync"/>
+        android:id="@+id/options"
+        android:icon="@drawable/ic_menu"
+        android:orderInCategory="101"
+        android:title="@string/menu_options"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_store"
+                android:title="@string/menu_backup"
+                app:showAsAction="ifRoom" />
+
+            <item
+                android:id="@+id/menu_restore"
+                android:title="@string/menu_restore"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
 </menu>

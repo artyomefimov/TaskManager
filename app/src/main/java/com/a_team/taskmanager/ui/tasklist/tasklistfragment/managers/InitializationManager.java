@@ -1,27 +1,25 @@
 package com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 
+import com.a_team.taskmanager.utils.BackgroundWorker;
 import com.a_team.taskmanager.viewmodel.TaskListViewModel;
 import com.a_team.taskmanager.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class InitializationManager {
-    private static final InitializationManager ourInstance = new InitializationManager();
-
     private TaskListViewModel mViewModel;
     private List<Task> mTasks;
 
     private TaskSearchUtil mSearchUtil;
 
-    public static InitializationManager getInstance() {
-        return ourInstance;
-    }
-
-    private InitializationManager() {
+    public InitializationManager() {
         mSearchUtil = TaskSearchUtil.getInstance();
     }
 
@@ -42,7 +40,17 @@ public class InitializationManager {
         });
     }
 
+    // todo добавить в метод выше и протестить
+    private void setNotificationsIfNecessary(Context context, List<Task> tasks) {
+        BackgroundWorker backgroundWorker = BackgroundWorker.getInstance();
+        backgroundWorker.setNotificationsForRestoredTasks(context, tasks);
+    }
+
     public TaskListViewModel getViewModel() {
         return mViewModel;
+    }
+
+    public List<Task> getTasks() {
+        return mTasks;
     }
 }

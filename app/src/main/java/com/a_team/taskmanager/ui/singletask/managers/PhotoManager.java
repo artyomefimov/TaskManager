@@ -12,25 +12,22 @@ import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.a_team.taskmanager.viewmodel.TaskViewModel;
-import com.a_team.taskmanager.utils.PictureUtils;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
+import com.a_team.taskmanager.utils.PictureUtils;
+import com.a_team.taskmanager.viewmodel.TaskViewModel;
 
 import java.io.File;
 import java.util.List;
 
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.FILE_PROVIDER;
-import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.REQUEST_PHOTO;
+import static com.a_team.taskmanager.utils.RequestCodeStorage.MAKE_PHOTO_REQUEST_CODE;
 
 public class PhotoManager {
     private TaskViewModel mViewModel;
     private Task mTask;
 
     private File mPhotoFile;
-
-    private boolean mIsShouldDeletePhoto;
-    private boolean mIsHasNoPhoto;
 
     public PhotoManager(TaskViewModel viewModel, Task task) {
         mViewModel = viewModel;
@@ -55,7 +52,7 @@ public class PhotoManager {
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
 
-                fragment.startActivityForResult(makePhotoIntent, REQUEST_PHOTO);
+                fragment.startActivityForResult(makePhotoIntent, MAKE_PHOTO_REQUEST_CODE);
             });
         }
     }
@@ -65,29 +62,23 @@ public class PhotoManager {
     }
 
     public void updatePhotoView(Activity activity, ImageView imageView) {
-        if (isPhotoFileNotExists(mPhotoFile))
-            mIsHasNoPhoto = true;
-        updatePhotoView(activity, imageView, mPhotoFile);
+        if (isPhotoFileNotExists(mPhotoFile)) {
+            imageView.setImageBitmap(null);
+        } else {
+            Bitmap scaledBitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), activity);
+            imageView.setImageBitmap(scaledBitmap);
+        }
     }
 
     private boolean isPhotoFileNotExists(File photoFile) {
         return photoFile == null || !photoFile.exists();
     }
 
-    private void updatePhotoView(Activity activity, ImageView imageView, File photoFile) {
-        if (isPhotoFileNotExists(photoFile)) {
-            imageView.setImageBitmap(null);
-        } else {
-            Bitmap scaledBitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), activity);
-            imageView.setImageBitmap(scaledBitmap);
-        }
-    }
-
     public void getPhotoFromCamera(AbstractTaskFragment fragment, ImageView imageView) {
         Uri uri = FileProvider.getUriForFile(fragment.getActivity(), FILE_PROVIDER, mPhotoFile);
         fragment.getActivity().revokeUriPermission(uri,
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        updatePhotoView(fragment.getActivity(), imageView, mPhotoFile);
+        updatePhotoView(fragment.getActivity(), imageView);
         fragment.getCallback().onDataChanged(true);
     }
 
