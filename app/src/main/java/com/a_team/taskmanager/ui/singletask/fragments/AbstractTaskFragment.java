@@ -242,8 +242,10 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
     }
 
     protected void performSave() {
-        if (isAlarmSet)
+        if (isAlarmSet) {
             AlarmManager.addNotification(getActivity(), mTask);
+            mInitializationManager.getViewModel().getRepository().subscribeOnTaskWithNotification(mTask);
+        }
         if (isAlarmRemoved)
             AlarmManager.removeNotification(getActivity(), mTask);
         mTaskOperationsManager.updateOrInsertTask(getActivity());

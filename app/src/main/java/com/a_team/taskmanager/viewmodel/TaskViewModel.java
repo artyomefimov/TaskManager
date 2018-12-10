@@ -50,6 +50,10 @@ public class TaskViewModel extends AndroidViewModel {
         mExecutor.execute(() -> mRepository.deleteTasks(task));
     }
 
+    public TaskManagerRepository getRepository() {
+        return mRepository;
+    }
+
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
 
         private final Application mApplication;

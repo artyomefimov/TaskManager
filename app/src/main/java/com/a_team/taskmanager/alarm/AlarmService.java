@@ -13,9 +13,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
+import android.test.mock.MockApplication;
 
+import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.repository.TaskManagerRepository;
 import com.a_team.taskmanager.utils.IntentBuilder;
+import com.a_team.taskmanager.utils.Optional;
 
 import static com.a_team.taskmanager.alarm.AlarmConstants.ACTION_SHOW_NOTIFICATION;
 import static com.a_team.taskmanager.alarm.AlarmConstants.BUNDLE;
@@ -59,14 +63,21 @@ public class AlarmService extends IntentService {
         if (intent == null)
             return;
         Bundle bundle = intent.getBundleExtra(BUNDLE);
-        Task task = bundle.getParcelable(ARG_CURRENT_TASK);
+        Task fromBundle = bundle.getParcelable(ARG_CURRENT_TASK);
 
-        int notificationId = task.getPhotoFilename().hashCode();
+        Optional<Task> fromRepository = getActualTaskForNotification(fromBundle.getId());
+
+        int notificationId = fromBundle.getPhotoFilename().hashCode();
 
         NotificationBuilder builder = NotificationBuilder.getInstance(this);
-        Notification notification = builder.buildNotification(this, task);
+        Notification notification = builder.buildNotification(this, fromRepository.isEmpty() ? fromBundle : fromRepository.getValue());
 
         showBackgroundNotification(notification, notificationId);
+    }
+
+    private Optional<Task> getActualTaskForNotification(long id) {
+        TaskManagerRepository repository = ((BasicApp) getApplication()).getRepository();
+        return repository.getTaskForNotification(id);
     }
 
     private void showBackgroundNotification(Notification notification, int notificationId) {

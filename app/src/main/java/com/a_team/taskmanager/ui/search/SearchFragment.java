@@ -187,7 +187,7 @@ public class SearchFragment extends Fragment {
         }
 
         private boolean isNoResults(List<Task> tasksFromSearch) {
-            return tasksFromSearch.equals(Collections.EMPTY_LIST);
+            return tasksFromSearch.equals(Collections.emptyList());
         }
 
         private void showNoResultsText() {
