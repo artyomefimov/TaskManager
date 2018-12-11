@@ -19,8 +19,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.alarm.AlarmManager;
+import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.managers.InitializationManager;
 import com.a_team.taskmanager.ui.singletask.managers.PhotoManager;
 import com.a_team.taskmanager.ui.singletask.managers.TaskOperationsManager;
@@ -244,7 +244,6 @@ public abstract class AbstractTaskFragment extends Fragment implements AlarmDate
     protected void performSave() {
         if (isAlarmSet) {
             AlarmManager.addNotification(getActivity(), mTask);
-            mInitializationManager.getViewModel().getRepository().subscribeOnTaskWithNotification(mTask);
         }
         if (isAlarmRemoved)
             AlarmManager.removeNotification(getActivity(), mTask);

@@ -32,4 +32,7 @@ public interface TaskDao {
 
     @Query("select * from Task where id = :id")
     LiveData<Task> getTask(long id);
+
+    @Query("select * from Task where id = :id")
+    Task getTaskObject(long id);
 }

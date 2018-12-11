@@ -5,12 +5,10 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.utils.FilenameGenerator;
-import com.a_team.taskmanager.utils.ToastMaker;
-
-import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod.SHORT;
 
 public class NewTaskFragment extends AbstractTaskFragment {
     @Override
@@ -22,14 +20,12 @@ public class NewTaskFragment extends AbstractTaskFragment {
 
     @Override
     protected void configureSetNotificationButton() {
-        mSetNotificationButton.setOnClickListener((view) ->
-                ToastMaker.show(getActivity(), R.string.set_notification_on_not_created_task, SHORT));
+        mSetNotificationButton.setVisibility(View.GONE);
     }
 
     @Override
     protected void configureDeleteNotificationButton() {
-        mDeleteNotificationButton.setOnClickListener((view) ->
-                ToastMaker.show(getActivity(), R.string.set_notification_on_not_created_task, SHORT));
+        mDeleteNotificationButton.setVisibility(View.GONE);
     }
 
     private void setUniqueNameForPhotoFile() {

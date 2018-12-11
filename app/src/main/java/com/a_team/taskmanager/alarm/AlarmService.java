@@ -13,19 +13,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
-import android.test.mock.MockApplication;
 
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
 import com.a_team.taskmanager.utils.IntentBuilder;
-import com.a_team.taskmanager.utils.Optional;
 
 import static com.a_team.taskmanager.alarm.AlarmConstants.ACTION_SHOW_NOTIFICATION;
 import static com.a_team.taskmanager.alarm.AlarmConstants.BUNDLE;
 import static com.a_team.taskmanager.alarm.AlarmConstants.NOTIFICATION;
-import static com.a_team.taskmanager.alarm.AlarmConstants.PERMISSION_PRIVATE;
 import static com.a_team.taskmanager.alarm.AlarmConstants.NOTIFICATION_ID;
+import static com.a_team.taskmanager.alarm.AlarmConstants.PERMISSION_PRIVATE;
 import static com.a_team.taskmanager.ui.singletask.SingleTaskConstants.ARG_CURRENT_TASK;
 
 public class AlarmService extends IntentService {
@@ -65,17 +63,18 @@ public class AlarmService extends IntentService {
         Bundle bundle = intent.getBundleExtra(BUNDLE);
         Task fromBundle = bundle.getParcelable(ARG_CURRENT_TASK);
 
-        Optional<Task> fromRepository = getActualTaskForNotification(fromBundle.getId());
+        Task fromRepository = getActualTaskForNotification(fromBundle.getId());
 
         int notificationId = fromBundle.getPhotoFilename().hashCode();
 
         NotificationBuilder builder = NotificationBuilder.getInstance(this);
-        Notification notification = builder.buildNotification(this, fromRepository.isEmpty() ? fromBundle : fromRepository.getValue());
+        Notification notification = builder
+                .buildNotification(this, fromRepository == null ? fromBundle : fromRepository);
 
         showBackgroundNotification(notification, notificationId);
     }
 
-    private Optional<Task> getActualTaskForNotification(long id) {
+    private Task getActualTaskForNotification(long id) {
         TaskManagerRepository repository = ((BasicApp) getApplication()).getRepository();
         return repository.getTaskForNotification(id);
     }

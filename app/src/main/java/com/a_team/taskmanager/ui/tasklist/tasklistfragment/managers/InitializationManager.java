@@ -1,17 +1,13 @@
 package com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 
-import com.a_team.taskmanager.utils.BackgroundWorker;
-import com.a_team.taskmanager.viewmodel.TaskListViewModel;
-import com.a_team.taskmanager.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
+import com.a_team.taskmanager.utils.TaskSearchUtil;
+import com.a_team.taskmanager.viewmodel.TaskListViewModel;
 
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class InitializationManager {
     private TaskListViewModel mViewModel;
@@ -38,12 +34,6 @@ public class InitializationManager {
                 fragment.updateRecyclerViewAdapter(mTasks);
             }
         });
-    }
-
-    // todo добавить в метод выше и протестить
-    private void setNotificationsIfNecessary(Context context, List<Task> tasks) {
-        BackgroundWorker backgroundWorker = BackgroundWorker.getInstance();
-        backgroundWorker.setNotificationsForRestoredTasks(context, tasks);
     }
 
     public TaskListViewModel getViewModel() {
