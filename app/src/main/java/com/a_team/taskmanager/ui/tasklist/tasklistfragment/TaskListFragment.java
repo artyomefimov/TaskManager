@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +34,9 @@ import com.a_team.taskmanager.ui.search.SearchActivity;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.MultipleSelectManager;
+import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.SwipeToDeleteCallback;
 import com.a_team.taskmanager.utils.IntentBuilder;
+import com.a_team.taskmanager.utils.SnackbarMaker;
 import com.a_team.taskmanager.utils.ToastMaker;
 import com.a_team.taskmanager.viewmodel.TaskListViewModel;
 import com.bignerdranch.android.multiselector.MultiSelector;
@@ -112,6 +116,8 @@ public class TaskListFragment extends Fragment {
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new TaskListAdapter(mTasks));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((TaskListAdapter) mRecyclerView.getAdapter(), getActivity()));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void configureNewTaskButton() {
@@ -279,6 +285,8 @@ public class TaskListFragment extends Fragment {
 
     public class TaskListAdapter extends RecyclerView.Adapter<TaskListViewHolder> {
         private List<Task> mTasks;
+        private Task mRecetlyDeletedTask;
+        private int mRecentlyDeletedItemPosition;
 
         private TaskListAdapter(List<Task> tasks) {
             mTasks = tasks;
@@ -308,6 +316,28 @@ public class TaskListFragment extends Fragment {
             mTasks = tasks;
             mMultipleSelectManager.setTasks(tasks);
             notifyDataSetChanged();
+        }
+
+        public void deleteItem(int position) {
+            mRecetlyDeletedTask = mTasks.get(position);
+            mRecentlyDeletedItemPosition = position;
+            mTasks.remove(position);
+
+            //mInitializationManager.getViewModel().deleteTasks(mRecetlyDeletedTask); // todo найти способ ждать пока снекбар на экране и удалять потом или не удалять по undo
+            notifyItemRemoved(position);
+        }
+
+        private void showUndoSnackbar() {
+            Snackbar undoSnackbar = SnackbarMaker.makeUndoDeleteSnackbar(getActivity());
+            if (undoSnackbar != null) {
+                undoSnackbar.setAction(R.string.undo_remove, (view) -> undoDelete());
+                undoSnackbar.show();
+            }
+        }
+
+        private void undoDelete() {
+            mTasks.add(mRecentlyDeletedItemPosition, mRecetlyDeletedTask);
+            notifyItemInserted(mRecentlyDeletedItemPosition);
         }
     }
 }
