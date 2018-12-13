@@ -51,4 +51,8 @@
     <string name="store_successful">Tasks were stored to backup!</string>
 
     <string name="temp_dir_for_unzip">temp_unzip</string>
+
+    <!--swipe delete-->
+    <string name="task_removed">1 task removed.</string>
+    <string name="undo_remove">UNDO</string>
 </resources>

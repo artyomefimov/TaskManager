@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers;
+package com.a_team.taskmanager.ui.tasklist.managers;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,6 @@ import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
-import com.a_team.taskmanager.utils.RequestCodeStorage;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SelectableHolder;
