@@ -30,11 +30,12 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.ui.tasklist.managers.SwipeDeleteAsyncTask;
 import com.a_team.taskmanager.ui.search.SearchActivity;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.InitializationManager;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.MultipleSelectManager;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.managers.SwipeToDeleteCallback;
+import com.a_team.taskmanager.ui.tasklist.managers.InitializationManager;
+import com.a_team.taskmanager.ui.tasklist.managers.MultipleSelectManager;
+import com.a_team.taskmanager.ui.tasklist.managers.SwipeToDeleteCallback;
 import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.SnackbarMaker;
 import com.a_team.taskmanager.utils.ToastMaker;
@@ -285,8 +286,9 @@ public class TaskListFragment extends Fragment {
 
     public class TaskListAdapter extends RecyclerView.Adapter<TaskListViewHolder> {
         private List<Task> mTasks;
-        private Task mRecetlyDeletedTask;
+        private Task mRecentlyDeletedTask;
         private int mRecentlyDeletedItemPosition;
+        private SwipeDeleteAsyncTask mAsyncSwipeDelete;
 
         private TaskListAdapter(List<Task> tasks) {
             mTasks = tasks;
@@ -319,12 +321,15 @@ public class TaskListFragment extends Fragment {
         }
 
         public void deleteItem(int position) {
-            mRecetlyDeletedTask = mTasks.get(position);
+            mRecentlyDeletedTask = mTasks.get(position);
             mRecentlyDeletedItemPosition = position;
             mTasks.remove(position);
-
-            //mInitializationManager.getViewModel().deleteTasks(mRecetlyDeletedTask); // todo найти способ ждать пока снекбар на экране и удалять потом или не удалять по undo
             notifyItemRemoved(position);
+
+            mAsyncSwipeDelete = new SwipeDeleteAsyncTask(mInitializationManager.getViewModel(), mRecentlyDeletedTask);
+            mAsyncSwipeDelete.execute();
+
+            showUndoSnackbar();
         }
 
         private void showUndoSnackbar() {
@@ -336,7 +341,8 @@ public class TaskListFragment extends Fragment {
         }
 
         private void undoDelete() {
-            mTasks.add(mRecentlyDeletedItemPosition, mRecetlyDeletedTask);
+            mAsyncSwipeDelete.cancel(true);
+            mTasks.add(mRecentlyDeletedItemPosition, mRecentlyDeletedTask);
             notifyItemInserted(mRecentlyDeletedItemPosition);
         }
     }
