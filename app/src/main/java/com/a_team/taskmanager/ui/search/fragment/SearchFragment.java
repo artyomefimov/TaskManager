@@ -60,8 +60,6 @@ public class SearchFragment extends Fragment {
         Serializable ids = getArguments().getSerializable(IDS_OF_FOUND_TASKS);
         mIdsOfFoundTasks = ids == null ? new ArrayList<>() : (ArrayList<Long>) ids;
 
-        // todo подумать, в какой момент запускать асинхронный поиск и как обрабатывать результаты. Сейчас выкидывается npe, когда поиск обращается к полям фрагмента
-
         setActionBarSubtitle();
     }
 

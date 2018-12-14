@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.net.Uri;
 
+import com.a_team.taskmanager.alarm.AlarmConstants;
 import com.a_team.taskmanager.alarm.AlarmManager;
 import com.a_team.taskmanager.database.TaskManagerDatabase;
 import com.a_team.taskmanager.entity.Task;
@@ -84,6 +85,11 @@ public class TaskManagerRepository {
             return new File(filesDir, fileName);
         } else
             return null;
+    }
+
+    public File getNotificationPropertiesFile(Context context) {
+        File filesDir = context.getFilesDir();
+        return new File(filesDir, AlarmConstants.PROPERTIES_FILE_NAME);
     }
 
     public void removePhotoFile(Uri uri) {

@@ -15,9 +15,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.a_team.taskmanager.BasicApp;
+import com.a_team.taskmanager.alarm.reboot.PropertiesDeleteHelper;
+import com.a_team.taskmanager.alarm.reboot.PropertiesWriter;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
 import com.a_team.taskmanager.utils.IntentBuilder;
+
+import java.io.File;
 
 import static com.a_team.taskmanager.alarm.AlarmConstants.ACTION_SHOW_NOTIFICATION;
 import static com.a_team.taskmanager.alarm.AlarmConstants.BUNDLE;
@@ -93,6 +97,7 @@ public class AlarmService extends IntentService {
         PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
         if (alarmManager != null) {
             scheduleAlarm(alarmManager, task, pendingIntent);
+            writeNotificationToPropertiesFile(context, task);
         }
     }
 
@@ -103,6 +108,11 @@ public class AlarmService extends IntentService {
             alarmManager.set(AlarmManager.RTC_WAKEUP, task.getNotificationDate(), pendingIntent);
     }
 
+    private static void writeNotificationToPropertiesFile(Context context, Task task) {
+        File propertiesFile = getPropertiesFileFromRepository(context);
+        PropertiesWriter.getInstance().writeNotificationToPropertiesFile(propertiesFile, task);
+    }
+
     public static void removeAlarm(Context context, Task task) {
         PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
 
@@ -111,5 +121,17 @@ public class AlarmService extends IntentService {
             alarmManager.cancel(pendingIntent);
         }
         task.setNotificationDate(null);
+
+        removeNotificationFromPropertiesFile(context, task);
+    }
+
+    private static void removeNotificationFromPropertiesFile(Context context, Task task) {
+        File propertiesFile = getPropertiesFileFromRepository(context);
+        PropertiesDeleteHelper.getInstance().deleteNotificationFromProperties(propertiesFile, task);
+    }
+
+    private static File getPropertiesFileFromRepository(Context context) {
+        TaskManagerRepository repository = ((BasicApp) ((Activity) context).getApplication()).getRepository();
+        return repository.getNotificationPropertiesFile(context);
     }
 }
