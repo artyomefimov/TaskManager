@@ -4,10 +4,10 @@ import android.app.Activity;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.utils.ToastMaker;
-import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
+
 import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod.SHORT;
 
-import com.a_team.taskmanager.viewmodel.TaskViewModel;
+import com.a_team.taskmanager.ui.singletask.viewmodel.TaskViewModel;
 import com.a_team.taskmanager.entity.Task;
 
 public class TaskOperationsManager {

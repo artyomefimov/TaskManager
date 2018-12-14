@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
-import com.a_team.taskmanager.viewmodel.TaskViewModel;
+import com.a_team.taskmanager.ui.singletask.viewmodel.TaskViewModel;
 
 public class InitializationManager {
     private TaskViewModel mViewModel;

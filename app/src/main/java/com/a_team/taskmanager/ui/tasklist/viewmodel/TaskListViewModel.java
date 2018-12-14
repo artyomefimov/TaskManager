@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.viewmodel;
+package com.a_team.taskmanager.ui.tasklist.viewmodel;
 
 import android.app.Activity;
 import android.app.Application;
@@ -35,22 +35,23 @@ import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
 
 public class TaskListViewModel extends AndroidViewModel {
     private MediatorLiveData<List<Task>> mTasks;
+
     private Executor mExecutor;
     private TaskManagerRepository mRepository;
     private BackupRestoreUtil mRestoreUtil;
     private FileDataWriter mFileDataWriter;
 
-    public TaskListViewModel(Application application, TaskManagerRepository repository) {
+     public TaskListViewModel(Application application) {
         super(application);
+        mRepository = ((BasicApp) application).getRepository();
+
         mTasks = new MediatorLiveData<>();
         mTasks.setValue(null);
 
-        LiveData<List<Task>> tasks = ((BasicApp) application).getRepository().getTasks();
+        LiveData<List<Task>> tasks = mRepository.getTasks();
         mTasks.addSource(tasks, tasks1 -> mTasks.setValue(tasks1));
 
         mExecutor = Executors.newSingleThreadExecutor();
-
-        mRepository = repository;
 
         mRestoreUtil = new BackupRestoreUtil();
 
@@ -117,18 +118,16 @@ public class TaskListViewModel extends AndroidViewModel {
     public static class Factory extends ViewModelProvider.NewInstanceFactory {
 
         private final Application mApplication;
-        private final TaskManagerRepository mRepository;
 
         public Factory(@NonNull Application application) {
             mApplication = application;
-            mRepository = ((BasicApp) application).getRepository();
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             //noinspection unchecked
-            return (T) new TaskListViewModel(mApplication, mRepository);
+            return (T) new TaskListViewModel(mApplication);
         }
     }
 }

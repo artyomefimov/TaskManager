@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.search;
+package com.a_team.taskmanager.ui.search.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import com.a_team.taskmanager.ui.FragmentActivity;
+import com.a_team.taskmanager.ui.search.fragment.SearchFragment;
 
 public class SearchActivity extends FragmentActivity {
     private static final String QUERY = "query";

@@ -3,9 +3,9 @@ package com.a_team.taskmanager.ui.tasklist.managers;
 import android.arch.lifecycle.ViewModelProviders;
 
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
+import com.a_team.taskmanager.ui.tasklist.fragment.TaskListFragment;
 import com.a_team.taskmanager.utils.TaskSearchUtil;
-import com.a_team.taskmanager.viewmodel.TaskListViewModel;
+import com.a_team.taskmanager.ui.tasklist.viewmodel.TaskListViewModel;
 
 import java.util.List;
 

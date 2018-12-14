@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.tasklist.tasklistfragment;
+package com.a_team.taskmanager.ui.tasklist.fragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.search.SearchActivity;
+import com.a_team.taskmanager.ui.search.activity.SearchActivity;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.managers.MultipleSelectManager;
@@ -39,7 +39,7 @@ import com.a_team.taskmanager.ui.tasklist.managers.SwipeToDeleteCallback;
 import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.SnackbarMaker;
 import com.a_team.taskmanager.utils.ToastMaker;
-import com.a_team.taskmanager.viewmodel.TaskListViewModel;
+import com.a_team.taskmanager.ui.tasklist.viewmodel.TaskListViewModel;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
 

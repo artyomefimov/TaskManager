@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.viewmodel;
+package com.a_team.taskmanager.ui.singletask.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;

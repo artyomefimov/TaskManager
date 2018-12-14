@@ -42,6 +42,10 @@ public class TaskManagerRepository {
         return mDatabase.taskDao().getAllTasks();
     }
 
+    public LiveData<List<Task>> getTasksByIds(Long... ids) {
+        return mDatabase.taskDao().getTasksByIds(ids);
+    }
+
     public void updateOrInsertTask(Task task) {
         if (isTaskWithCurrentIdExists(task.getId())) {
             mDatabase.taskDao().updateTasks(task);

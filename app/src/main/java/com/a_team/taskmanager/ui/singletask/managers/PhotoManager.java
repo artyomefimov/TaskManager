@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.fragments.AbstractTaskFragment;
 import com.a_team.taskmanager.utils.PictureUtils;
-import com.a_team.taskmanager.viewmodel.TaskViewModel;
+import com.a_team.taskmanager.ui.singletask.viewmodel.TaskViewModel;
 
 import java.io.File;
 import java.util.List;

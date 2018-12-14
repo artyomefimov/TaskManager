@@ -11,7 +11,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
+import com.a_team.taskmanager.ui.tasklist.fragment.TaskListFragment;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private TaskListFragment.TaskListAdapter mAdapter;

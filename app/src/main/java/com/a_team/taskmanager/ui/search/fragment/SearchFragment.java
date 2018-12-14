@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.search;
+package com.a_team.taskmanager.ui.search.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,10 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.utils.TaskSearchUtil;
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.ui.search.managers.InitializationManager;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
+import com.a_team.taskmanager.utils.TaskSearchUtil;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,14 +31,17 @@ import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_FROM_S
 
 public class SearchFragment extends Fragment {
     private static final String QUERY = "query";
+    private static final String IDS_OF_FOUND_TASKS = "idsOfFoundTasks";
 
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
     private TextView mNoResultsTextView;
-
-    private TaskSearchUtil mSearchUtil;
+    private InitializationManager mInitializationManager;
 
     private String query;
+
+    private ArrayList<Long> mIdsOfFoundTasks;
+    private List<Task> mFoundTasks;
 
     public static SearchFragment newInstance(String query) {
         Bundle args = new Bundle();
@@ -49,7 +55,20 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         query = getArguments().getString(QUERY);
+
+        Serializable ids = getArguments().getSerializable(IDS_OF_FOUND_TASKS);
+        mIdsOfFoundTasks = ids == null ? new ArrayList<>() : (ArrayList<Long>) ids;
+
+        // todo подумать, в какой момент запускать асинхронный поиск и как обрабатывать результаты. Сейчас выкидывается npe, когда поиск обращается к полям фрагмента
+
+        if (mIdsOfFoundTasks.size() == 0)
+            new AsyncSearchTask().execute();
+
+        mInitializationManager = new InitializationManager();
+        mInitializationManager.createViewModelAndSubscribeUI(this, mIdsOfFoundTasks);
+
         setActionBarSubtitle();
     }
 
@@ -61,10 +80,22 @@ public class SearchFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
+    private void addIdsOfFoundTasks(List<Task> foundTasks) {
+        for (Task task : foundTasks) {
+            mIdsOfFoundTasks.add(task.getId());
+        }
+    }
+
+    public void updateRecyclerViewAdapter(List<Task> tasks) {
+        if (isAdded()) {
+            ((SearchAdapter) mRecyclerView.getAdapter()).setTasks(tasks);
+        }
+    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(QUERY, query);
+        outState.putSerializable(IDS_OF_FOUND_TASKS, mIdsOfFoundTasks);
         super.onSaveInstanceState(outState);
     }
 
@@ -79,22 +110,12 @@ public class SearchFragment extends Fragment {
         mProgressBar = view.findViewById(R.id.search_fragment_progress_bar);
         mNoResultsTextView = view.findViewById(R.id.search_fragment_no_results);
 
-        mSearchUtil = TaskSearchUtil.getInstance();
-
-        new AsyncSearchTask().execute();
-
         return view;
     }
 
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.setAdapter(new SearchAdapter(null));
-    }
-
-    private void updateAdapter(List<Task> tasks) {
-        if (isAdded()) {
-            ((SearchAdapter) mRecyclerView.getAdapter()).setTasks(tasks);
-        }
+        mRecyclerView.setAdapter(new SearchAdapter(mFoundTasks));
     }
 
     private class SearchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -172,7 +193,7 @@ public class SearchFragment extends Fragment {
 
         @Override
         protected List<Task> doInBackground(Void... voids) {
-            mTasksFromSearch = mSearchUtil.performSearch(query);
+            mTasksFromSearch = TaskSearchUtil.getInstance().performSearch(query);
             return mTasksFromSearch;
         }
 
@@ -181,7 +202,8 @@ public class SearchFragment extends Fragment {
             if (isNoResults(mTasksFromSearch)) {
                 showNoResultsText();
             } else {
-                updateAdapter(mTasksFromSearch);
+                mFoundTasks = mTasksFromSearch;
+                addIdsOfFoundTasks(mTasksFromSearch);
                 hideProgressBar();
             }
         }

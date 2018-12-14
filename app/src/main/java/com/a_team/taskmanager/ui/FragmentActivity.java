@@ -1,6 +1,5 @@
 package com.a_team.taskmanager.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
@@ -9,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.a_team.taskmanager.R;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
 
 public abstract class FragmentActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
     private FragmentManager fragmentManager;

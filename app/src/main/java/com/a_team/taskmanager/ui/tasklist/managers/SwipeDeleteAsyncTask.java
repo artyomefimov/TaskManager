@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.viewmodel.TaskListViewModel;
+import com.a_team.taskmanager.ui.tasklist.viewmodel.TaskListViewModel;
 
 public class SwipeDeleteAsyncTask extends AsyncTask<Void, Void, Void> {
     private static final long CANCEL_DELETE_DELAY = 4000;

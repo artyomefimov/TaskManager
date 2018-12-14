@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
+import com.a_team.taskmanager.ui.tasklist.fragment.TaskListFragment;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SelectableHolder;

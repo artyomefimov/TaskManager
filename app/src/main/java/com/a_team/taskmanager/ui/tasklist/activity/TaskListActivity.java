@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.ui.FragmentActivity;
-import com.a_team.taskmanager.ui.tasklist.tasklistfragment.TaskListFragment;
+import com.a_team.taskmanager.ui.tasklist.fragment.TaskListFragment;
 
 import static com.a_team.taskmanager.utils.RequestCodeStorage.READ_PERMISSION_REQUEST_CODE;
 import static com.a_team.taskmanager.utils.RequestCodeStorage.WRITE_PERMISSION_REQUEST_CODE;
