@@ -21,6 +21,10 @@ import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_REQUES
 
 public class MultipleSelectManager {
 
+    public interface MultipleSelectActionModeFinishedCallback {
+        void onActionModeFinished();
+    }
+
     private MultiSelector mMultiSelector;
     private ModalMultiSelectorCallback mActionModeCallback;
     private InitializationManager mInitializationManager;
@@ -28,10 +32,16 @@ public class MultipleSelectManager {
     private List<Task> mSelectedTasks;
     private List<Task> mTasks;
 
-    public MultipleSelectManager(InitializationManager initializationManager) {
+    private ActionMode mActionMode;
+
+    private MultipleSelectActionModeFinishedCallback mCallback;
+
+    public MultipleSelectManager(InitializationManager initializationManager, MultipleSelectActionModeFinishedCallback callback) {
         mMultiSelector = new MultiSelector();
         mInitializationManager = initializationManager;
         mSelectedTasks = new ArrayList<>();
+
+        mCallback = callback;
     }
 
     public void configureActionModeCallback(TaskListFragment fragment) {
@@ -40,13 +50,14 @@ public class MultipleSelectManager {
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 super.onCreateActionMode(actionMode, menu);
                 fragment.getActivity().getMenuInflater().inflate(R.menu.menu_task_list_select_mode, menu);
+                mActionMode = actionMode;
                 return true;
             }
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 if (item.getItemId() == R.id.task_list_delete) {
-                    mode.finish();
+                    finishActionMode();
 
                     deleteSelectedTasks(fragment);
 
@@ -56,6 +67,11 @@ public class MultipleSelectManager {
                 return false;
             }
         };
+    }
+
+    private void finishActionMode() {
+        mActionMode.finish();
+        mCallback.onActionModeFinished();
     }
 
     private void deleteSelectedTasks(TaskListFragment fragment) {
@@ -72,6 +88,7 @@ public class MultipleSelectManager {
         } else {
             if (isCurrentTaskAlreadySelected(position)) {
                 removeSelection(holder, position);
+                finishActionModeIfLastTaskUnselected();
             } else {
                 selectCurrentTask(holder, position);
             }
@@ -95,6 +112,11 @@ public class MultipleSelectManager {
     private void addSelectedTask(int position) {
         Task task = mTasks.get(position);
         mSelectedTasks.add(task);
+    }
+
+    private void finishActionModeIfLastTaskUnselected() {
+        if (mSelectedTasks.size() == 0)
+            finishActionMode();
     }
 
     private void removeSelectedTask(int position) {

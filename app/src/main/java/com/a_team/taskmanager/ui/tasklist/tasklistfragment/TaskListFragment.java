@@ -30,11 +30,11 @@ import android.widget.TextView;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.tasklist.managers.SwipeDeleteAsyncTask;
 import com.a_team.taskmanager.ui.search.SearchActivity;
 import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
 import com.a_team.taskmanager.ui.tasklist.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.managers.MultipleSelectManager;
+import com.a_team.taskmanager.ui.tasklist.managers.SwipeDeleteAsyncTask;
 import com.a_team.taskmanager.ui.tasklist.managers.SwipeToDeleteCallback;
 import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.SnackbarMaker;
@@ -51,7 +51,7 @@ import java.util.Random;
 import static com.a_team.taskmanager.utils.RequestCodeStorage.CHOOSE_BACKUP_REQUEST_CODE;
 import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_REQUEST_CODE;
 
-public class TaskListFragment extends Fragment {
+public class TaskListFragment extends Fragment implements MultipleSelectManager.MultipleSelectActionModeFinishedCallback {
     private RecyclerView mRecyclerView;
     private FloatingActionButton mNewTaskButton;
 
@@ -59,6 +59,8 @@ public class TaskListFragment extends Fragment {
     private MultipleSelectManager mMultipleSelectManager;
 
     private List<Task> mTasks;
+
+    private ItemTouchHelper mSwipeDeleteTouch;
 
     public static TaskListFragment newInstance() {
         Bundle args = new Bundle();
@@ -80,7 +82,7 @@ public class TaskListFragment extends Fragment {
         mInitializationManager = new InitializationManager();
         mInitializationManager.createViewModelAndSubscribeUI(this);
 
-        mMultipleSelectManager = new MultipleSelectManager(mInitializationManager);
+        mMultipleSelectManager = new MultipleSelectManager(mInitializationManager, this);
         mMultipleSelectManager.configureActionModeCallback(this);
 
         setHasOptionsMenu(true);
@@ -117,8 +119,8 @@ public class TaskListFragment extends Fragment {
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new TaskListAdapter(mTasks));
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((TaskListAdapter) mRecyclerView.getAdapter(), getActivity()));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        mSwipeDeleteTouch = new ItemTouchHelper(new SwipeToDeleteCallback((TaskListAdapter) mRecyclerView.getAdapter(), getActivity()));
+        mSwipeDeleteTouch.attachToRecyclerView(mRecyclerView);
     }
 
     private void configureNewTaskButton() {
@@ -241,6 +243,11 @@ public class TaskListFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActionModeFinished() {
+        mSwipeDeleteTouch.attachToRecyclerView(mRecyclerView);
+    }
+
     /**
      * View holder to show single action in recycler view
      */
@@ -276,6 +283,7 @@ public class TaskListFragment extends Fragment {
 
         @Override
         public boolean onLongClick(View v) {
+            mSwipeDeleteTouch.attachToRecyclerView(null);
             return mMultipleSelectManager.performLongClick(this, TaskListFragment.this, getAdapterPosition());
         }
     }
