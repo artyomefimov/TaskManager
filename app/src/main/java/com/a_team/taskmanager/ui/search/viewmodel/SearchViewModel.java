@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.search;
+package com.a_team.taskmanager.ui.search.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -7,38 +7,27 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelStore;
-import android.arch.lifecycle.ViewModelStoreOwner;
 import android.support.annotation.NonNull;
-import android.test.mock.MockApplication;
 
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
-import com.a_team.taskmanager.ui.tasklist.viewmodel.TaskListViewModel;
 
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class SearchViewModel extends AndroidViewModel {
-    private TaskManagerRepository mRepository;
     private MediatorLiveData<List<Task>> mTasks;
-
-    private Executor mExecutor;
 
     public SearchViewModel(@NonNull Application application, List<Long> idsOfTasksForSearch) {
         super(application);
 
-        mRepository = ((BasicApp) application).getRepository();
-        mExecutor = Executors.newSingleThreadExecutor();
-
         mTasks = new MediatorLiveData<>();
         mTasks.setValue(null);
 
+        TaskManagerRepository repository = ((BasicApp) application).getRepository();
         Long[] ids = idsOfTasksForSearch.toArray(new Long[0]);
 
-        LiveData<List<Task>> tasksForSearch = mRepository.getTasksByIds(ids);
+        LiveData<List<Task>> tasksForSearch = repository.getTasksByIds(ids);
         mTasks.addSource(tasksForSearch, foundTasks -> mTasks.setValue(foundTasks));
     }
 
@@ -52,6 +41,7 @@ public class SearchViewModel extends AndroidViewModel {
 
         public Factory(@NonNull Application application, List<Long> idsOfTasksForSearch) {
             super(application);
+            mApplication = application;
             mIdsForSearch = idsOfTasksForSearch;
         }
 

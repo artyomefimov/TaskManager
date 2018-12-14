@@ -41,7 +41,6 @@ public class SearchFragment extends Fragment {
     private String query;
 
     private ArrayList<Long> mIdsOfFoundTasks;
-    private List<Task> mFoundTasks;
 
     public static SearchFragment newInstance(String query) {
         Bundle args = new Bundle();
@@ -62,12 +61,6 @@ public class SearchFragment extends Fragment {
         mIdsOfFoundTasks = ids == null ? new ArrayList<>() : (ArrayList<Long>) ids;
 
         // todo подумать, в какой момент запускать асинхронный поиск и как обрабатывать результаты. Сейчас выкидывается npe, когда поиск обращается к полям фрагмента
-
-        if (mIdsOfFoundTasks.size() == 0)
-            new AsyncSearchTask().execute();
-
-        mInitializationManager = new InitializationManager();
-        mInitializationManager.createViewModelAndSubscribeUI(this, mIdsOfFoundTasks);
 
         setActionBarSubtitle();
     }
@@ -115,7 +108,20 @@ public class SearchFragment extends Fragment {
 
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.setAdapter(new SearchAdapter(mFoundTasks));
+        mRecyclerView.setAdapter(new SearchAdapter(Collections.emptyList()));
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (mIdsOfFoundTasks.size() == 0)
+            new AsyncSearchTask().execute();
+    }
+
+    private void initManager() {
+        mInitializationManager = new InitializationManager();
+        mInitializationManager.createViewModelAndSubscribeUI(this, mIdsOfFoundTasks);
     }
 
     private class SearchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -202,10 +208,10 @@ public class SearchFragment extends Fragment {
             if (isNoResults(mTasksFromSearch)) {
                 showNoResultsText();
             } else {
-                mFoundTasks = mTasksFromSearch;
                 addIdsOfFoundTasks(mTasksFromSearch);
                 hideProgressBar();
             }
+            initManager();
         }
 
         private boolean isNoResults(List<Task> tasksFromSearch) {
