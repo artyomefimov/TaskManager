@@ -11,7 +11,6 @@ import com.a_team.taskmanager.database.dao.DateConverter;
 import com.a_team.taskmanager.utils.NullStringProcessor;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.Objects;
 
 @Entity(tableName = "Task")

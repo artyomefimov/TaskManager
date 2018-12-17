@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import com.a_team.taskmanager.BasicApp;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
+import com.a_team.taskmanager.utils.WorkerThreadFactory;
 
 import java.io.File;
 import java.util.concurrent.Executor;
@@ -27,7 +28,7 @@ public class TaskViewModel extends AndroidViewModel {
         super(application);
         mRepository = repository;
         mLiveDataTask = new MutableLiveData<>();
-        mExecutor = Executors.newSingleThreadExecutor();
+        mExecutor = Executors.newSingleThreadExecutor(new WorkerThreadFactory());
     }
 
     public LiveData<Task> getTask() {

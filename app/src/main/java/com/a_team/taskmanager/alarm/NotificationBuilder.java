@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.RingtoneManager;
@@ -15,12 +14,8 @@ import android.support.v4.app.NotificationCompat;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.entity.Task;
-import com.a_team.taskmanager.ui.singletask.activity.SingleTaskActivity;
-import com.a_team.taskmanager.ui.tasklist.activity.TaskListActivity;
 import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.NullStringProcessor;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class NotificationBuilder {
     private static NotificationBuilder instance;

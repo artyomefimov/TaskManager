@@ -9,6 +9,7 @@ import com.a_team.taskmanager.alarm.AlarmManager;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.entity.TaskBuilder;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
+import com.a_team.taskmanager.utils.WorkerThreadFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +26,7 @@ public class PropertiesReader {
     private Executor mExecutor;
 
     private PropertiesReader() {
-        mExecutor = Executors.newSingleThreadExecutor();
+        mExecutor = Executors.newSingleThreadExecutor(new WorkerThreadFactory());
     }
 
     public static PropertiesReader getInstance() {

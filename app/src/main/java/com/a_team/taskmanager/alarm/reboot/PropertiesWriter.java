@@ -3,6 +3,7 @@ package com.a_team.taskmanager.alarm.reboot;
 import android.util.Log;
 
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.utils.WorkerThreadFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,7 +19,7 @@ public class PropertiesWriter {
     private Executor mExecutor;
 
     private PropertiesWriter() {
-        mExecutor = Executors.newSingleThreadExecutor();
+        mExecutor = Executors.newSingleThreadExecutor(new WorkerThreadFactory());
     }
 
     public static PropertiesWriter getInstance() {

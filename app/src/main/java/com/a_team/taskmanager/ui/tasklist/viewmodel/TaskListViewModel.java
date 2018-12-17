@@ -20,6 +20,7 @@ import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
 import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.ToastMaker;
+import com.a_team.taskmanager.utils.WorkerThreadFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class TaskListViewModel extends AndroidViewModel {
         LiveData<List<Task>> tasks = mRepository.getTasks();
         mTasks.addSource(tasks, tasks1 -> mTasks.setValue(tasks1));
 
-        mExecutor = Executors.newSingleThreadExecutor();
+        mExecutor = Executors.newSingleThreadExecutor(new WorkerThreadFactory());
 
         mRestoreUtil = new BackupRestoreUtil();
 

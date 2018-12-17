@@ -24,7 +24,7 @@ public class IntentBuilder {
 
     public static PendingIntent buildPendingIntent(Context context, Task task) {
         Intent whatToStart = AlarmService.newIntent(context, task);
-        return PendingIntent.getService(context, 0, whatToStart, PendingIntent.FLAG_ONE_SHOT);
+        return PendingIntent.getService(context, 0, whatToStart, PendingIntent.FLAG_ONE_SHOT); // todo проверить необходимость уникального request code'a, флаг pending intent'a
     }
 
     public static PendingIntent buildNotificationIntentForTaskListActivity(Context context) {

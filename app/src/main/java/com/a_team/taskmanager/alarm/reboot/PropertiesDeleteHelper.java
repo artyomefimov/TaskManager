@@ -1,9 +1,9 @@
 package com.a_team.taskmanager.alarm.reboot;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.a_team.taskmanager.entity.Task;
+import com.a_team.taskmanager.utils.WorkerThreadFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ public class PropertiesDeleteHelper {
     private Executor mExecutor;
 
     private PropertiesDeleteHelper() {
-        mExecutor = Executors.newSingleThreadExecutor();
+        mExecutor = Executors.newSingleThreadExecutor(new WorkerThreadFactory());
     }
 
     public static PropertiesDeleteHelper getInstance() {

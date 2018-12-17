@@ -2,8 +2,8 @@ package com.a_team.taskmanager.ui.search.managers;
 
 import android.arch.lifecycle.ViewModelProviders;
 
-import com.a_team.taskmanager.ui.search.viewmodel.SearchViewModel;
 import com.a_team.taskmanager.ui.search.fragment.SearchFragment;
+import com.a_team.taskmanager.ui.search.viewmodel.SearchViewModel;
 
 import java.util.List;
 

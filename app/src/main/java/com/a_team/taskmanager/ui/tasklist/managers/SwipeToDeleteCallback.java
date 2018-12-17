@@ -64,7 +64,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
                     itemView.getTop()  + 22,
                     itemView.getRight(),
                     itemView.getBottom() - 20);
-        } else if (isUnswiped(dX)) {
+        } else if (isSwipeNotPerforming(dX)) {
             mBackgroundColorOnSwipe.setBounds(0,0,0,0);
         }
 
@@ -80,7 +80,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         return dx < 0;
     }
 
-    private boolean isUnswiped(float dx) {
+    private boolean isSwipeNotPerforming(float dx) {
         return dx == 0;
     }
 

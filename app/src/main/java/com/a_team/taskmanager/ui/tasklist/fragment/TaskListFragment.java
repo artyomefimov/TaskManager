@@ -36,18 +36,18 @@ import com.a_team.taskmanager.ui.tasklist.managers.InitializationManager;
 import com.a_team.taskmanager.ui.tasklist.managers.MultipleSelectManager;
 import com.a_team.taskmanager.ui.tasklist.managers.SwipeDeleteAsyncTask;
 import com.a_team.taskmanager.ui.tasklist.managers.SwipeToDeleteCallback;
+import com.a_team.taskmanager.ui.tasklist.viewmodel.TaskListViewModel;
 import com.a_team.taskmanager.utils.IntentBuilder;
 import com.a_team.taskmanager.utils.SnackbarMaker;
 import com.a_team.taskmanager.utils.ToastMaker;
-import com.a_team.taskmanager.ui.tasklist.viewmodel.TaskListViewModel;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+import static com.a_team.taskmanager.ui.tasklist.TaskListConstants.REQUEST_PERMISSIONS;
 import static com.a_team.taskmanager.utils.RequestCodeStorage.CHOOSE_BACKUP_REQUEST_CODE;
 import static com.a_team.taskmanager.utils.RequestCodeStorage.SELECT_TASK_REQUEST_CODE;
 
@@ -205,7 +205,7 @@ public class TaskListFragment extends Fragment implements MultipleSelectManager.
 
             if (permissionRead != PackageManager.PERMISSION_GRANTED && permissionWrite != PackageManager.PERMISSION_GRANTED) {
                 String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                activity.requestPermissions(permissions, new Random().nextInt());
+                activity.requestPermissions(permissions, REQUEST_PERMISSIONS.hashCode());
             }
         }
     }

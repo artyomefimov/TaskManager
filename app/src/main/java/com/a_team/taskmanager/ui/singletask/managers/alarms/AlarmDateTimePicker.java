@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.a_team.taskmanager.R;
 import com.a_team.taskmanager.utils.ToastMaker;
-import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 
 import java.text.SimpleDateFormat;
@@ -16,6 +15,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import static com.a_team.taskmanager.utils.ToastMaker.ToastPeriod;
 
 public class AlarmDateTimePicker {
     private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";

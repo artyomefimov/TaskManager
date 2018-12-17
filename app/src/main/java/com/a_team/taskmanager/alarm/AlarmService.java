@@ -62,7 +62,7 @@ public class AlarmService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent == null)
+        if (intent == null) // todo посмотреть
             return;
         Bundle bundle = intent.getBundleExtra(BUNDLE);
         Task fromBundle = bundle.getParcelable(ARG_CURRENT_TASK);
@@ -94,8 +94,8 @@ public class AlarmService extends IntentService {
 
     public static void setAlarm(Context context, Task task) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
         if (alarmManager != null) {
+            PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
             scheduleAlarm(alarmManager, task, pendingIntent);
             writeNotificationToPropertiesFile(context, task);
         }
