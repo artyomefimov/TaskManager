@@ -9,17 +9,19 @@ import com.a_team.taskmanager.alarm.AlarmManager;
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.entity.TaskBuilder;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
+import com.a_team.taskmanager.utils.AlarmDateTimeController;
 import com.a_team.taskmanager.utils.WorkerThreadFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class PropertiesReader {
+public class PropertiesReader extends PropertiesOperation {
     private static PropertiesReader instance;
     private static final String TAG = "PropertiesReader";
 
@@ -38,25 +40,13 @@ public class PropertiesReader {
     public void resetNotificationsFromProperties(Context context) {
         mExecutor.execute(() -> {
             try {
-                File propertiesFile;
-                if (context.getApplicationContext() instanceof BasicApp) {
-                    Log.i(TAG, "Context is the instance of Keep App.");
-                    propertiesFile = getFileFromRepository(context);
-                } else {
-                    Log.i(TAG, "Context is not the instance of Keep App.");
-                    propertiesFile = getFile(context);
-                }
-
+                File propertiesFile = getPropertiesFile(context);
                 if (isFileNotCorrect(propertiesFile))
                     throw new RuntimeException("File is not exist or can not be read.");
 
-                FileInputStream fis = new FileInputStream(propertiesFile);
-                Properties properties = new Properties();
-                properties.load(fis);
-                fis.close();
+                Properties properties = loadPropertiesFromFile(propertiesFile);
 
-                propertiesFile.delete();
-                propertiesFile.createNewFile();
+                recreatePropertiesFile(propertiesFile); // todo проверить необходимость
 
                 resetNotifications(context, properties);
             } catch (IOException e) {
@@ -65,8 +55,14 @@ public class PropertiesReader {
         });
     }
 
-    private boolean isFileNotCorrect(File file) {
-        return !file.exists() || !file.canRead();
+    private File getPropertiesFile(Context context) {
+        if (context.getApplicationContext() instanceof BasicApp) {
+            Log.i(TAG, "Context is the instance of Keep App.");
+            return getFileFromRepository(context);
+        } else { // todo протестить
+            Log.i(TAG, "Context is not the instance of Keep App.");
+            return getFile(context);
+        }
     }
 
     private File getFileFromRepository(Context context) {
@@ -81,6 +77,11 @@ public class PropertiesReader {
         return new File(filesDir, AlarmConstants.PROPERTIES_FILE_NAME);
     }
 
+    private void recreatePropertiesFile(File propertiesFile) throws IOException {
+        propertiesFile.delete();
+        propertiesFile.createNewFile();
+    }
+
     private void resetNotifications(Context context, Properties properties) {
         Enumeration<?> taskIds = properties.propertyNames();
 
@@ -93,13 +94,14 @@ public class PropertiesReader {
             id = Long.parseLong(key);
             notificationDate = (Long) properties.get(key);
 
+            if (AlarmDateTimeController.isValidDateTime(new Date(), new Date(notificationDate))) {
+                Task task = new TaskBuilder()
+                        .setId(id)
+                        .setNotificationDate(notificationDate)
+                        .build();
 
-            Task task = new TaskBuilder()
-                    .setId(id)
-                    .setNotificationDate(notificationDate)
-                    .build();
-
-            AlarmManager.addNotification(context, task);
+                AlarmManager.addNotification(context, task);
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class PropertiesWriter {
+public class PropertiesWriter extends PropertiesOperation {
     private static PropertiesWriter instance;
     private static final String TAG = "PropertiesWriter";
 
@@ -38,14 +38,9 @@ public class PropertiesWriter {
                 Log.i(TAG, "File correct. exists = " + propertiesFile.exists() +
                         ", can write = " + propertiesFile.canWrite());
 
-                FileOutputStream fos = new FileOutputStream(propertiesFile);
-                Properties properties = new Properties();
+                Properties properties = loadPropertiesFromFile(propertiesFile);
 
-                properties.put(task.getId() + "", task.getNotificationDate().toString());
-
-                properties.store(fos, null);
-
-                fos.close();
+                writePropertyIfNotPresent(properties, task, propertiesFile);
 
                 Log.i(TAG, "Notification for task: " + task.toString() + " was written to properties file.");
             } catch (IOException e) {
@@ -54,7 +49,10 @@ public class PropertiesWriter {
         });
     }
 
-    private boolean isFileNotCorrect(File file) {
-        return !file.exists() || !file.canWrite();
+    private void writePropertyIfNotPresent(Properties properties, Task task, File propertiesFile) throws IOException {
+        if (!properties.containsKey(task.getId() + "")) {
+            properties.put(task.getId() + "", task.getNotificationDate().toString());
+            writePropertiesToFile(properties, propertiesFile);
+        }
     }
 }

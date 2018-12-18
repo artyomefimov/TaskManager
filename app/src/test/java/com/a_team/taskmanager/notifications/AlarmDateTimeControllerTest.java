@@ -1,6 +1,6 @@
 package com.a_team.taskmanager.notifications;
 
-import com.a_team.taskmanager.ui.singletask.managers.alarms.AlarmDateTimeController;
+import com.a_team.taskmanager.utils.AlarmDateTimeController;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.a_team.taskmanager.ui.singletask.managers.alarms;
+package com.a_team.taskmanager.utils;
 
 import java.util.Date;
 

@@ -47,7 +47,7 @@ public class AlarmService extends IntentService {
         }
     };
 
-    public static Intent newIntent(Context context, Task task) {
+    public static Intent newIntent(Context context, Task task) { // todo передавать только id
         Intent intent = new Intent(context, AlarmService.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(ARG_CURRENT_TASK, task);
@@ -69,13 +69,17 @@ public class AlarmService extends IntentService {
 
         Task fromRepository = getActualTaskForNotification(fromBundle.getId());
 
-        int notificationId = fromBundle.getPhotoFilename().hashCode();
+        if (fromRepository != null) {
+            removeNotificationFromPropertiesFile(this, fromRepository);
 
-        NotificationBuilder builder = NotificationBuilder.getInstance(this);
-        Notification notification = builder
-                .buildNotification(this, fromRepository == null ? fromBundle : fromRepository);
+            int notificationId = fromRepository.getPhotoFilename().hashCode();
 
-        showBackgroundNotification(notification, notificationId);
+            NotificationBuilder builder = NotificationBuilder.getInstance(this);
+            Notification notification = builder
+                    .buildNotification(this, fromRepository);
+
+            showBackgroundNotification(notification, notificationId);
+        }
     }
 
     private Task getActualTaskForNotification(long id) {

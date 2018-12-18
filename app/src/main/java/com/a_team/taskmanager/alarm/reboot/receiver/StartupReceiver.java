@@ -1,9 +1,11 @@
-package com.a_team.taskmanager.alarm.reboot;
+package com.a_team.taskmanager.alarm.reboot.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import com.a_team.taskmanager.alarm.reboot.PropertiesReader;
 
 public class StartupReceiver extends BroadcastReceiver {
     private static final String BOOT_COMPLETED_ACTION = "android.intent.action.BOOT_COMPLETED";

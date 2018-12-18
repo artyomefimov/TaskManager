@@ -59,7 +59,7 @@
 
         <service android:name=".alarm.AlarmService"/>
 
-        <receiver android:name=".alarm.reboot.StartupReceiver"
+        <receiver android:name=".alarm.reboot.receiver.StartupReceiver"
             android:exported="false"
             android:enabled="true">
             <intent-filter>
