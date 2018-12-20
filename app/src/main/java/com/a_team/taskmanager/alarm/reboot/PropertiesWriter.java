@@ -50,9 +50,7 @@ public class PropertiesWriter extends PropertiesOperation {
     }
 
     private void writePropertyIfNotPresent(Properties properties, Task task, File propertiesFile) throws IOException {
-        if (!properties.containsKey(task.getId() + "")) {
-            properties.put(task.getId() + "", task.getNotificationDate().toString());
-            writePropertiesToFile(properties, propertiesFile);
-        }
+        properties.put(task.getId() + "", task.getNotificationDate().toString());
+        writePropertiesToFile(properties, propertiesFile);
     }
 }

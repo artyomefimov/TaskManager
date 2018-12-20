@@ -24,12 +24,18 @@ public class IntentBuilder {
 
     public static PendingIntent buildPendingIntent(Context context, Task task) {
         Intent whatToStart = AlarmService.newIntent(context, task);
-        return PendingIntent.getService(context, 0, whatToStart, PendingIntent.FLAG_UPDATE_CURRENT); // todo проверить необходимость уникального request code'a, флаг pending intent'a
+        return PendingIntent.getService(context,
+                task.getPhotoFilename().hashCode(),
+                whatToStart,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent buildNotificationIntentForTaskListActivity(Context context) {
         Intent whatToStart = buildIntentForTaskListActivity(context);
-        return PendingIntent.getActivity(context, getUniqueRequestCode(), whatToStart, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context,
+                getUniqueRequestCode(),
+                whatToStart,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private static Intent buildIntentForTaskListActivity(Context context) {

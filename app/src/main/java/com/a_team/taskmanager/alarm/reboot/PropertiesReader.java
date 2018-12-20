@@ -41,16 +41,20 @@ public class PropertiesReader extends PropertiesOperation {
         mExecutor.execute(() -> {
             try {
                 File propertiesFile = getPropertiesFile(context);
-                if (isFileNotCorrect(propertiesFile))
+                if (isFileNotCorrect(propertiesFile)) {
+                    Log.i(TAG, "file not correct" + propertiesFile.exists() + " " + propertiesFile.canRead() + " " + propertiesFile.canWrite());
                     throw new RuntimeException("File is not exist or can not be read.");
+                }
 
                 Properties properties = loadPropertiesFromFile(propertiesFile);
 
-                recreatePropertiesFile(propertiesFile); // todo проверить необходимость
+                Log.i(TAG, "properties loaded");
 
                 resetNotifications(context, properties);
+
+                Log.i(TAG, "notification were reset");
             } catch (IOException e) {
-                Log.e(TAG, "Could not read properties from file.", e);
+                Log.i(TAG, "Could not read properties from file.", e);
             }
         });
     }
@@ -59,7 +63,7 @@ public class PropertiesReader extends PropertiesOperation {
         if (context.getApplicationContext() instanceof BasicApp) {
             Log.i(TAG, "Context is the instance of Keep App.");
             return getFileFromRepository(context);
-        } else { // todo протестить
+        } else {
             Log.i(TAG, "Context is not the instance of Keep App.");
             return getFile(context);
         }
@@ -77,11 +81,6 @@ public class PropertiesReader extends PropertiesOperation {
         return new File(filesDir, AlarmConstants.PROPERTIES_FILE_NAME);
     }
 
-    private void recreatePropertiesFile(File propertiesFile) throws IOException {
-        propertiesFile.delete();
-        propertiesFile.createNewFile();
-    }
-
     private void resetNotifications(Context context, Properties properties) {
         Enumeration<?> taskIds = properties.propertyNames();
 
@@ -94,7 +93,10 @@ public class PropertiesReader extends PropertiesOperation {
             id = Long.parseLong(key);
             notificationDate = (Long) properties.get(key);
 
+            Log.i(TAG, "notification date: " + notificationDate);
+
             if (AlarmDateTimeController.isValidDateTime(new Date(), new Date(notificationDate))) {
+                Log.i(TAG, "notification date: " + notificationDate + " valid.");
                 Task task = new TaskBuilder()
                         .setId(id)
                         .setNotificationDate(notificationDate)

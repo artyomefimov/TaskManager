@@ -47,7 +47,7 @@ public class AlarmService extends IntentService {
         }
     };
 
-    public static Intent newIntent(Context context, Task task) { // todo передавать только id
+    public static Intent newIntent(Context context, Task task) {
         Intent intent = new Intent(context, AlarmService.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(ARG_CURRENT_TASK, task);
@@ -62,7 +62,7 @@ public class AlarmService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent == null) // todo посмотреть
+        if (intent == null)
             return;
         Bundle bundle = intent.getBundleExtra(BUNDLE);
         Task fromBundle = bundle.getParcelable(ARG_CURRENT_TASK);
@@ -70,8 +70,6 @@ public class AlarmService extends IntentService {
         Task fromRepository = getActualTaskForNotification(fromBundle.getId());
 
         if (fromRepository != null) {
-            removeNotificationFromPropertiesFile(this, fromRepository);
-
             int notificationId = fromRepository.getPhotoFilename().hashCode();
 
             NotificationBuilder builder = NotificationBuilder.getInstance(this);
@@ -113,8 +111,10 @@ public class AlarmService extends IntentService {
     }
 
     private static void writeNotificationToPropertiesFile(Context context, Task task) {
-        File propertiesFile = getPropertiesFileFromRepository(context);
-        PropertiesWriter.getInstance().writeNotificationToPropertiesFile(propertiesFile, task);
+        if (context instanceof Activity) {
+            File propertiesFile = getPropertiesFileFromRepository(context);
+            PropertiesWriter.getInstance().writeNotificationToPropertiesFile(propertiesFile, task);
+        }
     }
 
     public static void removeAlarm(Context context, Task task) {
