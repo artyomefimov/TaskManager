@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.a_team.taskmanager">
+
+    <permission android:name="com.a_team.taskmanager.PRIVATE"
+        android:protectionLevel="signature"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="com.a_team.taskmanager.PRIVATE"/>
 
     <application
         android:name=".BasicApp"
@@ -9,24 +25,49 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true"
+        tools:ignore="GoogleAppIndexingWarning">
+
         <activity
-            android:name=".ui.tasklist.TaskListActivity">
+            android:name=".ui.tasklist.activity.TaskListActivity"
+            android:noHistory="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".ui.taskedit.TaskEditActivity">
+            android:name=".ui.singletask.activity.SingleTaskActivity"
+            android:launchMode="singleInstance">
         </activity>
-        
-        <!--<provider-->
-            <!--android:authorities="com.a_team.taskmanager.fileprovider"-->
-            <!--android:name="android.support.v4.content.FileProvider"-->
-            <!--android:exported="false"-->
-            <!--android:grantUriPermissions="true"/>-->
+
+        <activity android:name=".ui.search.activity.SearchActivity"
+            android:launchMode="standard"/>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.artyom.taskmanager.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files" />
+        </provider>
+
+        <service android:name=".alarm.AlarmService"/>
+
+        <receiver android:name=".alarm.reboot.receiver.StartupReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

@@ -2,50 +2,41 @@ package com.a_team.taskmanager.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
-import android.databinding.BaseObservable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.a_team.taskmanager.database.dao.DateConverter;
+import com.a_team.taskmanager.utils.NullStringProcessor;
 
-import java.sql.Date;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(tableName = "Task")
-@TypeConverters({DateConverter.class})
-public class Task extends BaseObservable implements Parcelable {
+public class Task implements Parcelable, Serializable {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID")
     private long id;
 
-    @NonNull
-    @ColumnInfo(name = "Title")
+    @ColumnInfo(name = "title")
     private String title;
 
-    @ColumnInfo(name = "Description")
+    @ColumnInfo(name = "description")
     private String description;
 
-    @ColumnInfo(name = "Notification")
-    private Date notificationDate;
+    @TypeConverters({DateConverter.class})
+    @ColumnInfo(name = "notification_date")
+    private Long notificationDate;
+
+    @ColumnInfo(name = "filename")
+    private String fileUUID;
 
     @Deprecated
-    /**
-     * @deprecated use Task.emptyTask() instead
-     */
-    public Task() {
-    }
+    public Task() {}
 
     public static Task emptyTask() {
         return new Task();
-    }
-
-    @Ignore
-    public Task(@NonNull String name) {
-        this.title = name;
     }
 
     public void setDescription(String description) {
@@ -56,7 +47,6 @@ public class Task extends BaseObservable implements Parcelable {
         return this.id;
     }
 
-    @NonNull
     public String getTitle() {
         return this.title;
     }
@@ -69,16 +59,39 @@ public class Task extends BaseObservable implements Parcelable {
         this.id = id;
     }
 
-    public void setTitle(@NonNull String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public Date getNotificationDate() {
+    public Long getNotificationDate() {
         return notificationDate;
     }
 
-    public void setNotificationDate(@NonNull Date notificationDate) {
+    public void setNotificationDate(Long notificationDate) {
         this.notificationDate = notificationDate;
+    }
+
+    public String getFileUUID() {
+        return fileUUID;
+    }
+
+    public void setFileUUID(String fileUUID) {
+        this.fileUUID = fileUUID;
+    }
+
+    public String getPhotoFilename() {
+        return fileUUID;
+    }
+
+    private void setNotificationDateFromString(String notificationDate) {
+        this.notificationDate = getLongFromString(notificationDate);
+    }
+
+    private Long getLongFromString(String in) {
+        if (in == null || in.isEmpty())
+            return null;
+        else
+            return Long.parseLong(in);
     }
 
     @Override
@@ -91,7 +104,8 @@ public class Task extends BaseObservable implements Parcelable {
         dest.writeLong(id);
         dest.writeString(title);
         dest.writeString(description);
-        dest.writeSerializable(notificationDate);
+        dest.writeString(NullStringProcessor.valueOf(notificationDate));
+        dest.writeString(fileUUID);
     }
 
     public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
@@ -101,7 +115,8 @@ public class Task extends BaseObservable implements Parcelable {
             task.setId(source.readLong());
             task.setTitle(source.readString());
             task.setDescription(source.readString());
-            task.setNotificationDate((Date) source.readSerializable());
+            task.setNotificationDateFromString(source.readString());
+            task.setFileUUID(source.readString());
             return task;
         }
 
@@ -117,6 +132,8 @@ public class Task extends BaseObservable implements Parcelable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
+                ", notificationDate=" + notificationDate +
+                ", fileUUID='" + fileUUID + '\'' +
                 '}';
     }
 
@@ -128,11 +145,12 @@ public class Task extends BaseObservable implements Parcelable {
         return id == task.id &&
                 Objects.equals(title, task.title) &&
                 Objects.equals(description, task.description) &&
-                Objects.equals(notificationDate, task.notificationDate);
+                Objects.equals(notificationDate, task.notificationDate) &&
+                Objects.equals(fileUUID, task.fileUUID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, notificationDate);
+        return Objects.hash(id, title, description, notificationDate, fileUUID);
     }
 }

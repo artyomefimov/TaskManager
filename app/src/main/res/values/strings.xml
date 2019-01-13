@@ -1,11 +1,58 @@
 <resources>
-    <string name="app_name">Task Manager</string>
+    <string name="app_name">Keep</string>
 
     <string name="menu_search">Search</string>
-    <string name="menu_sync">Sync</string>
+    <string name="menu_backup">Backup</string>
+    <string name="menu_restore">Restore from backup</string>
+    <string name="menu_options">Options</string>
+
     <string name="menu_save">Save</string>
     <string name="menu_delete">Delete</string>
 
     <string name="hint_title">Title</string>
     <string name="hint_description">Description</string>
+
+    <string name="no_results">No results</string>
+
+    <string name="task_image">Photo of the task</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="remove">Remove</string>
+    
+    <string name="confirm_title">Warning</string>
+    <string name="confirm_message">Not saved data will be lost. Confirm?</string>
+
+    <string name="incorrect_task">Incorrect task was received!</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="saving_changes">Saving changes…</string>
+    <string name="deleting_task">Deleting task…</string>
+
+    <string name="alarm_date_time">Alarm date&amp;time</string>
+    <string name="invalid_date_time">You can only set notification to the time in the future!</string>
+
+    <string name="new_task_fragment_action_bar_title">Create task</string>
+    
+    <!--notification-->
+    
+    <string name="notification_ticker">Don\'t forget!</string>
+    <string name="no_title">No title</string>
+
+    <string name="set_notification_on_not_created_task">You should create the task first!</string>
+
+    <!--backup-->
+
+    <string name="incorrect_file_to_restore">Could not restore tasks from this file!</string>
+    <string name="restore_successful">Tasks were restored successfully!</string>
+    <string name="store_successful">Tasks were stored to backup!</string>
+
+    <string name="temp_dir_for_unzip">temp_unzip</string>
+
+    <!--swipe delete-->
+    <string name="task_removed">1 task removed.</string>
+    <string name="undo_remove">UNDO</string>
 </resources>

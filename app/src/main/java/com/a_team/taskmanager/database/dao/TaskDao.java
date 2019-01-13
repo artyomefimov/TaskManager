@@ -14,18 +14,17 @@ import java.util.List;
 
 @Dao
 public interface TaskDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(Task task);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insert(Task task);
-
-    @Query("delete from Task")
-    void deleteAll();
+    void insertTasks(Task... tasks);
 
     @Delete
-    int deleteTasks(Task... tasks);
+    void deleteTasks(Task... tasks);
 
     @Update
-    int updateTasks(Task... tasks);
+    void updateTasks(Task... tasks);
 
     @Query("select * from Task")
     LiveData<List<Task>> getAllTasks();
@@ -34,5 +33,8 @@ public interface TaskDao {
     LiveData<Task> getTask(long id);
 
     @Query("select * from Task where id = :id")
-    List<Task> isTaskExists(long id);
+    Task getTaskObject(long id);
+
+    @Query("select * from Task where id IN (:ids)")
+    LiveData<List<Task>> getTasksByIds(Long... ids);
 }
