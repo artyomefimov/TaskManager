@@ -99,7 +99,6 @@ public class AlarmService extends IntentService {
         if (alarmManager != null) {
             PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
             scheduleAlarm(alarmManager, task, pendingIntent);
-            writeNotificationToPropertiesFile(context, task);
         }
     }
 
@@ -110,13 +109,6 @@ public class AlarmService extends IntentService {
             alarmManager.set(AlarmManager.RTC_WAKEUP, task.getNotificationDate(), pendingIntent);
     }
 
-    private static void writeNotificationToPropertiesFile(Context context, Task task) {
-        if (context instanceof Activity) {
-            File propertiesFile = getPropertiesFileFromRepository(context);
-            PropertiesWriter.getInstance().writeNotificationToPropertiesFile(propertiesFile, task);
-        }
-    }
-
     public static void removeAlarm(Context context, Task task) {
         PendingIntent pendingIntent = IntentBuilder.buildPendingIntent(context, task);
 
@@ -125,17 +117,5 @@ public class AlarmService extends IntentService {
             alarmManager.cancel(pendingIntent);
         }
         task.setNotificationDate(null);
-
-        removeNotificationFromPropertiesFile(context, task);
-    }
-
-    private static void removeNotificationFromPropertiesFile(Context context, Task task) {
-        File propertiesFile = getPropertiesFileFromRepository(context);
-        PropertiesDeleteHelper.getInstance().deleteNotificationFromProperties(propertiesFile, task);
-    }
-
-    private static File getPropertiesFileFromRepository(Context context) {
-        TaskManagerRepository repository = ((BasicApp) ((Activity) context).getApplication()).getRepository();
-        return repository.getNotificationPropertiesFile(context);
     }
 }

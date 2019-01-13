@@ -1,6 +1,7 @@
 package com.a_team.taskmanager.backup;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.a_team.taskmanager.entity.Task;
 import com.a_team.taskmanager.repository.TaskManagerRepository;
@@ -21,6 +22,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.a_team.taskmanager.backup.utils.BackupConstants.BACKUP_FILE;
 import static com.a_team.taskmanager.backup.utils.BackupConstants.BACKUP_FOLDER;
@@ -35,19 +38,25 @@ public class FileDataWriter {
     }
 
     public Observable<File> writeTasksToBackup(Context context, TaskManagerRepository repository, List<Task> tasks) throws IOException {
-        mFiles = new ArrayList<>();
-        File backup = getBackupFile(context);
+        return Observable.fromCallable(() -> {
+            mFiles = new ArrayList<>();
+            File backup = getBackupFile(context);
 
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(backup))) {
-            writeTasksToFiles(repository, tasks);
-            zipFiles(zos);
-        } catch (FileNotFoundException e) {
-            throw new IOException(FILE_NOT_FOUND_WRITE, e);
-        } catch (IOException e) {
-            throw new IOException(IO_EXCEPTION_WRITE, e);
-        }
+            try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(backup))) {
+                writeTasksToFiles(repository, tasks);
+                zipFiles(zos);
+            } catch (FileNotFoundException e) {
+                throw new IOException(FILE_NOT_FOUND_WRITE, e);
+            } catch (IOException e) {
+                throw new IOException(IO_EXCEPTION_WRITE, e);
+            }
 
-        return Observable.just(backup);
+            Log.i("Backup", "tasks stored. Thread: " + Thread.currentThread().getName());
+
+            return backup;
+        })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private File getBackupFile(Context context) throws IOException {

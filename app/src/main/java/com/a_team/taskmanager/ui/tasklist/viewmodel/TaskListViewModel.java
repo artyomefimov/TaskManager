@@ -69,8 +69,6 @@ public class TaskListViewModel extends AndroidViewModel {
 
     public void addTasksFromBackupToDatabase(Activity activity, Uri backupUri) throws IOException {
         mRestoreUtil.restoreTasks(activity, mRepository, backupUri)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableObserver<Task[]>() {
                     @Override
                     public void onNext(Task[] tasks) {
@@ -93,8 +91,6 @@ public class TaskListViewModel extends AndroidViewModel {
 
     public void storeTasksToBackup(Activity activity, List<Task> tasks) throws IOException {
         mFileDataWriter.writeTasksToBackup(activity, mRepository, tasks)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DisposableObserver<File>() {
                     @Override
                     public void onNext(File file) {

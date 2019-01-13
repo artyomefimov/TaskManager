@@ -15,6 +15,8 @@ public class StartupReceiver extends BroadcastReceiver {
             Log.i("StartupReceiver", "boot completed. Resetting notifications...");
 
             PropertiesReader.getInstance().resetNotificationsFromProperties(context);
+
+            //todo сделать восстановление оповещений после перезагрузки устройства
         }
     }
 }
